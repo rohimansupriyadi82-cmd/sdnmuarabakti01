@@ -16,15 +16,18 @@ export default function Login() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    
     setTimeout(() => {
-      if (username === "admin" && password === "admin") {
-        toast.success("Login berhasil");
+      const storedPass = localStorage.getItem("admin_password") || "admin";
+      if (username === "admin" && password === storedPass) {
+        setAuth({ username: "admin", role: "admin" });
+        toast.success("Login berhasil!");
         navigate("/dashboard");
       } else {
-        toast.error("Username atau password salah");
+        toast.error("Username atau password salah!");
       }
       setLoading(false);
-    }, 500);
+    }, 1000);
   };
 
   return (

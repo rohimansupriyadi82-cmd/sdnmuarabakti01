@@ -21,12 +21,12 @@ export default function SuratKeteranganNISN() {
 
   useEffect(() => {
     if (siswa && barcodeRef.current) {
-      JsBarcode(barcodeRef.current, `${siswa.nama} - ${siswa.nisn}`, {
+      JsBarcode(barcodeRef.current, siswa.nisn, {
         format: "CODE128",
-        width: 1.2,
-        height: 35,
+        width: 1.5,
+        height: 40,
         displayValue: true,
-        fontSize: 10,
+        fontSize: 12,
         margin: 0
       });
     }
@@ -68,7 +68,7 @@ export default function SuratKeteranganNISN() {
                 margin: "0 auto",
                 padding: "25mm 15mm 20mm 20mm",
                 fontFamily: "'Times New Roman', serif",
-                fontSize: "11pt",
+                fontSize: "12pt",
                 lineHeight: 1.5,
                 color: "black",
                 background: "white",
@@ -79,11 +79,11 @@ export default function SuratKeteranganNISN() {
                 nomorSurat={store.sekolah.noSuratNISN}
               />
 
-              <p className="text-justify indent-8 mb-6">
+              <p className="text-justify indent-8 mb-6 mt-8">
                 Yang bertandatangan dibawah ini Kepala {store.sekolah.namaSekolah} menerangkan bahwa :
               </p>
 
-              <div className="space-y-1 mb-6 ml-8 text-[11pt]">
+              <div className="space-y-2 mb-8 ml-12">
                 <div className="flex"><span className="w-48">Nama</span><span className="w-4">:</span><span className="font-bold uppercase">{siswa.nama}</span></div>
                 <div className="flex"><span className="w-48">Tempat dan Tanggal Lahir</span><span className="w-4">:</span><span>{siswa.tempatLahir}, {siswa.tanggalLahir}</span></div>
                 <div className="flex"><span className="w-48">Jenis Kelamin</span><span className="w-4">:</span><span>{siswa.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</span></div>
@@ -91,13 +91,13 @@ export default function SuratKeteranganNISN() {
                 <div className="flex"><span className="w-48">NISN</span><span className="w-4">:</span><span className="font-bold">{siswa.nisn}</span></div>
               </div>
 
-              <p className="text-justify indent-8 mb-4">
+              <p className="text-justify indent-8 mb-12">
                 Demikian surat keterangan ini dibuat untuk dipergunakan sebagai bahan persyaratan
-                mengikuti seleksi Penerimaan Peserta Didik Baru (PPDB) pada sekolah lanjutan
+                mengikuti seleksi Penerimaan Peserta Didik Baru (PPDB) pada sekolah lanjutan.
               </p>
 
-              <div className="flex justify-between items-end mt-12">
-                <div className="barcode-container">
+              <div className="flex justify-between items-end mt-20">
+                <div className="barcode-container pb-2">
                   <svg ref={barcodeRef}></svg>
                 </div>
                 <TandaTanganKepala tanggal={store.sekolah.tglSuratNISN} />

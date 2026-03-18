@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Save, Calendar as CalendarIcon, Trash2 } from "lucide-react";
+import { Save, Calendar as CalendarIcon, Trash2, KeyRound } from "lucide-react";
 import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -36,12 +36,23 @@ export default function IdentitasKepalaSekolah() {
     }
   };
 
+  const handleChangePassword = () => {
+    const newPass = prompt("Masukkan password baru:");
+    if (newPass) {
+      localStorage.setItem("admin_password", newPass);
+      toast.success("Password berhasil diubah!");
+    }
+  };
+
   return (
     <div className="max-w-3xl animate-fade-in space-y-4">
       <Card className="shadow-card">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-heading font-semibold">Identitas Kepala Sekolah</CardTitle>
           <div className="flex gap-2">
+            <Button onClick={handleChangePassword} variant="outline" size="sm" className="h-9">
+              <KeyRound className="mr-2 h-4 w-4" /> Ganti Password
+            </Button>
             <Button onClick={handleResetData} variant="destructive" size="sm" className="h-9">
               <Trash2 className="mr-2 h-4 w-4" /> Reset Data
             </Button>
