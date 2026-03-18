@@ -13,6 +13,13 @@ import {
   Collapsible, CollapsibleContent, CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
+const administrasiGuruKelasItems = [
+  { title: "Cetak Kartu Ujian", url: "/print/kartu-ujian", icon: Printer },
+  { title: "Generate Nomor Meja", url: "/generate/nomor-meja", icon: Users },
+  { title: "Data Murid & NISN", url: "/data-siswa", icon: Users },
+  { title: "Olah Nilai & Raport", url: "/nilai/7", icon: BookOpen },
+];
+
 const dataMasterItems = [
   { title: "Identitas Sekolah", url: "/identitas-sekolah", icon: School },
   { title: "Data Peserta Didik", url: "/data-siswa", icon: Users },
@@ -153,6 +160,9 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
+        <SidebarSeparator />
+
+        <CollapsibleGroup label="ADMINISTRASI GURU KELAS" icon={Users} items={administrasiGuruKelasItems} collapsed={collapsed} />
         <SidebarSeparator />
 
         <CollapsibleGroup label="DATA MASTER" icon={FileText} items={dataMasterItems} collapsed={collapsed} />
