@@ -37,10 +37,14 @@ export default function IdentitasKepalaSekolah() {
   };
 
   const handleChangePassword = () => {
-    const newPass = prompt("Masukkan password baru:");
+    const passwordInput = document.getElementById('newPassword') as HTMLInputElement;
+    const newPass = passwordInput?.value;
     if (newPass) {
       localStorage.setItem("admin_password", newPass);
       toast.success("Password berhasil diubah!");
+      passwordInput.value = "";
+    } else {
+      toast.error("Silakan masukkan password baru.");
     }
   };
 
@@ -256,6 +260,50 @@ export default function IdentitasKepalaSekolah() {
                   />
                 </PopoverContent>
               </Popover>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-card border-t-4 border-t-slate-800">
+        <CardHeader>
+          <CardTitle className="text-heading font-bold flex items-center gap-2">
+            <KeyRound className="h-5 w-5" /> KEAMANAN & AKUN
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-4 max-w-md">
+            <div className="space-y-2">
+              <Label htmlFor="newPassword">Password Baru</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="newPassword"
+                  type="password"
+                  placeholder="Masukkan password baru..."
+                  className="h-10 border-slate-200"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleChangePassword();
+                    }
+                  }}
+                />
+                <Button onClick={handleChangePassword} variant="secondary">
+                  Update Password
+                </Button>
+              </div>
+              <p className="text-[10px] text-slate-400 italic">*Password akan tersimpan di browser ini saja.</p>
+            </div>
+          </div>
+
+          <div className="pt-6 border-t border-slate-100">
+            <div className="bg-red-50 border border-red-100 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="space-y-1">
+                <h4 className="text-sm font-bold text-red-900">Zona Bahaya</h4>
+                <p className="text-xs text-red-700">Hapus permanen semua data (siswa, nilai, pengaturan) dari aplikasi ini.</p>
+              </div>
+              <Button onClick={handleResetData} variant="destructive" className="font-bold shadow-lg shadow-red-100">
+                <Trash2 className="mr-2 h-4 w-4" /> Hapus Semua Data & Reset
+              </Button>
             </div>
           </div>
         </CardContent>

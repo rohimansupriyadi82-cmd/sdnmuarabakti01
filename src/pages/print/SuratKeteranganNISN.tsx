@@ -75,28 +75,37 @@ export default function SuratKeteranganNISN() {
               }}
             >
               <KopSekolah
-                judulSurat="SURAT KETERANGAN NISN"
+                judulSurat="SURAT KETERANGAN NOMOR INDUK SISWA NASIONAL (NISN)"
                 nomorSurat={store.sekolah.noSuratNISN}
               />
 
               <p className="text-justify indent-8 mb-6 mt-8">
-                Yang bertandatangan dibawah ini Kepala {store.sekolah.namaSekolah} menerangkan bahwa :
+                Yang bertanda tangan di bawah ini Kepala Sekolah Dasar Negeri Muara Bakti 01 menerangkan bahwa :
               </p>
 
-              <div className="space-y-2 mb-8 ml-12">
+              <div className="space-y-1 mb-6 ml-12 text-[11pt]">
                 <div className="flex"><span className="w-48">Nama</span><span className="w-4">:</span><span className="font-bold uppercase">{siswa.nama}</span></div>
                 <div className="flex"><span className="w-48">Tempat dan Tanggal Lahir</span><span className="w-4">:</span><span>{siswa.tempatLahir}, {siswa.tanggalLahir}</span></div>
                 <div className="flex"><span className="w-48">Jenis Kelamin</span><span className="w-4">:</span><span>{siswa.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</span></div>
-                <div className="flex"><span className="w-48">Nama Orang Tua</span><span className="w-4">:</span><span>{siswa.namaOrtuIjazah || siswa.namaAyah}</span></div>
+                <div className="flex"><span className="w-48">Nomor Induk Siswa (NIS)</span><span className="w-4">:</span><span>{siswa.nis}</span></div>
                 <div className="flex"><span className="w-48">NISN</span><span className="w-4">:</span><span className="font-bold">{siswa.nisn}</span></div>
+                <div className="flex"><span className="w-48">Nama Orang Tua</span><span className="w-4">:</span><span>{siswa.namaOrtuIjazah || siswa.namaAyah}</span></div>
+                <div className="flex"><span className="w-48">Alamat</span><span className="w-4">:</span><span>{siswa.alamat}</span></div>
+              </div>
+
+              <p className="text-justify indent-8 mb-6">
+                Adalah benar nama tersebut di atas berasal dari {store.sekolah.namaSekolah} Tahun Pelajaran 2024/2025 dan berdasarkan catatan pada kami, peserta didik tersebut telah mempunyai Nomor Induk Siswa Nasional (NISN) hasil Verifikasi dan Validasi (VERVAL PD) di PDSP yaitu :
+              </p>
+
+              <div className="my-8 py-4 px-8 border-2 border-blue-800 bg-blue-100 text-center rounded-lg">
+                <span className="text-4xl font-black tracking-[0.2em] text-blue-900">{siswa.nisn}</span>
               </div>
 
               <p className="text-justify indent-8 mb-12">
-                Demikian surat keterangan ini dibuat untuk dipergunakan sebagai bahan persyaratan
-                mengikuti seleksi Penerimaan Peserta Didik Baru (PPDB) pada sekolah lanjutan.
+                Demikian surat keterangan ini kami buat untuk dapat dipergunakan sebagaimana mestinya.
               </p>
 
-              <div className="flex justify-between items-end mt-20">
+              <div className="flex justify-between items-end mt-12">
                 <div className="barcode-container pb-2">
                   <svg ref={barcodeRef}></svg>
                 </div>
