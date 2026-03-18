@@ -71,7 +71,7 @@ export default function Login() {
             </div>
             <Button 
               type="submit" 
-              className="w-full h-12 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold shadow-lg shadow-cyan-200 transition-all duration-300 transform hover:-translate-y-1 active:scale-95" 
+              className="w-full h-12 rounded-2xl bg-gradient-to-r from-teal-400 to-cyan-600 hover:from-teal-500 hover:to-cyan-700 text-white font-bold shadow-lg shadow-teal-200 transition-all duration-300 transform hover:-translate-y-1 active:scale-95" 
               disabled={loading}
             >
               {loading ? "Memproses..." : "Masuk"}

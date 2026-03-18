@@ -147,7 +147,7 @@ export function AppSidebar() {
           <img src={logoBekasi} alt="Logo" className="h-12 w-12" />
           {!collapsed && (
             <div className="flex flex-col text-left">
-              <span className="text-sm font-semibold text-sidebar-foreground/90">Aplikasi Olah Nilai</span>
+              <span className="text-sm font-bold text-sidebar-foreground/90 tracking-tight">Aplikasi Administrasi Sekolah</span>
               <span className="text-xs text-sidebar-foreground/50">Tahun Pelajaran 2025/2026</span>
             </div>
           )}
