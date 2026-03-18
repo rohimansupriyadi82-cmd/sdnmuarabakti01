@@ -541,9 +541,19 @@
         function hapusSiswa(idx) { if(confirm("Hapus siswa ini?")) { currentSiswa.splice(idx, 1); generateTable(); saveState(); } }
         function clearAttendance() { if(confirm("Kosongkan absen?")) { attendanceData = {}; manualRekap = {}; generateTable(); saveState(); } }
 
-        window.onload = loadState;
+        window.onload = () => {
+            loadState();
+            // Integrasi Data Sekolah dari LocalStorage
+            const rawSekolah = localStorage.getItem('gradebook.sekolah');
+            if (rawSekolah) {
+                const sekolah = JSON.parse(rawSekolah);
+                if (sekolah.namaSekolah) document.getElementById('lembaga').value = sekolah.namaSekolah;
+                if (sekolah.kepalaSekolah) document.getElementById('kepala').value = sekolah.kepalaSekolah;
+                generateTable();
+            }
+        };
     </script>
     <!-- Tombol Kembali Melayang -->
-    <a href="/dashboard" style="position:fixed; top:20px; left:20px; background:blue; color:white; padding:10px; border-radius:5px; text-decoration:none; z-index:9999;" class="no-print">⬅ Kembali ke Dashboard</a>
+    <a href="#" onclick="window.history.back(); return false;" style="position:fixed; top:20px; left:20px; background:blue; color:white; padding:10px; border-radius:5px; text-decoration:none; z-index:9999;" class="no-print">⬅ Kembali ke Dashboard</a>
 </body>
 </html>

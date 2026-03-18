@@ -85,7 +85,7 @@ export default function PrintIjazah() {
 
               <div className="flex justify-end mt-12">
                 <div className="text-center text-sm">
-                  <p>{store.sekolah.kabupaten}, .................... 2026</p>
+                  <p>{store.sekolah.kabupaten}, {store.sekolah.tglIjazah ? new Date(store.sekolah.tglIjazah).toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'}) : '.................... 2026'}</p>
                   <p className="mt-1">Kepala Sekolah</p>
                   <div className="h-16" />
                   <p className="font-medium underline">{store.sekolah.kepalaSekolah}</p>

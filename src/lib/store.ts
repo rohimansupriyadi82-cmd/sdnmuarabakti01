@@ -41,8 +41,12 @@ export interface DataSekolah {
   mapelMuloKomputer: boolean;
   nomorSurat: string;
   noSuratLulus: string;
+  tglSuratLulus: string;
   noSuratKelakuanBaik: string;
+  tglSuratKelakuanBaik: string;
   noSuratNISN: string;
+  tglSuratNISN: string;
+  tglIjazah: string;
   tanggalSurat: string;
   kota: string;
 }
@@ -173,8 +177,12 @@ const defaultSekolah: DataSekolah = {
   mapelMuloKomputer: true,
   nomorSurat: '421.2/001/SDNMB01/III/2026',
   noSuratLulus: '400.3.12.1/041/SD.37/VI/2025',
+  tglSuratLulus: new Date().toISOString().split('T')[0],
   noSuratKelakuanBaik: '400.3.12.1/042/SD.37/VI/2025',
+  tglSuratKelakuanBaik: new Date().toISOString().split('T')[0],
   noSuratNISN: '400.3.12.1/043/SD.37/VI/2025',
+  tglSuratNISN: new Date().toISOString().split('T')[0],
+  tglIjazah: new Date().toISOString().split('T')[0],
   tanggalSurat: new Date().toISOString().split('T')[0],
   kota: 'Bekasi',
 };

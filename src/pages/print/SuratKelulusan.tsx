@@ -125,7 +125,7 @@ export default function SuratKelulusan() {
                 <strong className="underline"> Selamat </strong> dan kami haturkan terimakasih
               </p>
 
-              <TandaTanganKepala />
+              <TandaTanganKepala tanggal={store.sekolah.tglSuratLulus} />
             </div>
           </CardContent>
         </Card>

@@ -72,24 +72,8 @@ export default function SuratKeteranganNISN() {
                 <div className="flex"><span className="w-48">Nama</span><span className="w-4">:</span><span className="font-bold uppercase">{siswa.nama}</span></div>
                 <div className="flex"><span className="w-48">Tempat dan Tanggal Lahir</span><span className="w-4">:</span><span>{siswa.tempatLahir}, {siswa.tanggalLahir}</span></div>
                 <div className="flex"><span className="w-48">Jenis Kelamin</span><span className="w-4">:</span><span>{siswa.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</span></div>
-                <div className="flex"><span className="w-48">Nomor Induk Siswa</span><span className="w-4">:</span><span>{siswa.nis}</span></div>
-                <div className="flex"><span className="w-48">NISN</span><span className="w-4">:</span><span>{siswa.nisn}</span></div>
-                <div className="flex"><span className="w-48">Asal Sekolah</span><span className="w-4">:</span><span>{store.sekolah.namaSekolah}</span></div>
-                <div className="flex"><span className="w-48">Nama Orang Tua/Wali</span><span className="w-4">:</span><span>{siswa.namaOrtuIjazah}</span></div>
-                <div className="flex"><span className="w-48">Alamat</span><span className="w-4">:</span><span>{siswa.alamat}</span></div>
-              </div>
-
-              <p className="text-justify indent-8 mb-4">
-                Adalah benar nama tersebut di atas berasal dari {store.sekolah.namaSekolah} Tahun
-                Pelajaran 2024/2025 dan berdasarkan catatan pada kami, peserta didik tersebut telah
-                mempunyai Nomor Induk Siswa Nasional (NISN) hasil Verfikasi dan Validasi (VERVAL PD)
-                di PDSP yaitu :
-              </p>
-
-              <div className="flex justify-center my-6">
-                <div style={{ border: "2px solid #333", background: "#bcd0ee", padding: "8mm 14mm", textAlign: "center", width: "150mm" }}>
-                  <p className="text-[28pt] font-bold tabular-nums tracking-widest">{siswa.nisn}</p>
-                </div>
+                <div className="flex"><span className="w-48">Nama Orang Tua</span><span className="w-4">:</span><span>{siswa.namaOrtuIjazah || siswa.namaAyah}</span></div>
+                <div className="flex"><span className="w-48">NISN</span><span className="w-4">:</span><span className="font-bold">{siswa.nisn}</span></div>
               </div>
 
               <p className="text-justify indent-8 mb-4">
@@ -97,7 +81,7 @@ export default function SuratKeteranganNISN() {
                 mengikuti seleksi Penerimaan Peserta Didik Baru (PPDB) pada sekolah lanjutan
               </p>
 
-              <TandaTanganKepala />
+              <TandaTanganKepala tanggal={store.sekolah.tglSuratNISN} />
             </div>
           </CardContent>
         </Card>

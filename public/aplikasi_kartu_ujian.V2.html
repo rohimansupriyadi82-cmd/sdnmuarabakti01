@@ -228,17 +228,29 @@
     }
 
     function loadData() {
-        const saved = localStorage.getItem('kartuA4_v21');
-        if (saved) {
-            const data = JSON.parse(saved);
-            Object.keys(data).forEach(key => {
-                if(key !== 'media') {
-                    const el = document.getElementById('in' + key.charAt(0).toUpperCase() + key.slice(1));
-                    if(el) el.value = data[key];
-                }
-            });
-            if(data.media) mediaFiles = data.media;
-            updateDropdownKelas(); // Perbarui dropdown saat load data lama
+        const raw = localStorage.getItem('gradebook.siswa');
+        const rawSekolah = localStorage.getItem('gradebook.sekolah');
+        let sekolah = null;
+        if (rawSekolah) {
+            sekolah = JSON.parse(rawSekolah);
+            // Update header dari data sekolah
+            if (sekolah.namaSekolah) {
+                const inSekolah = document.getElementById('inSekolah');
+                if (inSekolah) inSekolah.value = sekolah.namaSekolah;
+            }
+        }
+
+        if (raw) {
+            const data = JSON.parse(raw);
+            const siswaInput = data.map(s => `${s.nama};${s.nisn || s.nis};${s.kelas};${s.tempatLahir};${s.tanggalLahir};${s.nomorPeserta};${s.ruang || ''}`).join('\n');
+            document.getElementById('inSiswa').value = siswaInput;
+            
+            if (sekolah) {
+                if (sekolah.kepalaSekolah) document.getElementById('inTtdNama').value = sekolah.kepalaSekolah;
+                if (sekolah.nipKepalaSekolah) document.getElementById('inNip').value = sekolah.nipKepalaSekolah;
+            }
+            
+            updateDropdownKelas();
             render();
         }
     }
@@ -350,6 +362,6 @@
     window.onload = loadData;
 </script>
     <!-- Tombol Kembali Melayang -->
-    <a href="/dashboard" style="position:fixed; top:20px; left:20px; background:blue; color:white; padding:10px; border-radius:5px; text-decoration:none; z-index:9999;" class="no-print">⬅ Kembali ke Dashboard</a>
+    <a href="#" onclick="window.history.back(); return false;" style="position:fixed; top:20px; left:20px; background:blue; color:white; padding:10px; border-radius:5px; text-decoration:none; z-index:9999;" class="no-print">⬅ Kembali ke Dashboard</a>
 </body>
 </html>

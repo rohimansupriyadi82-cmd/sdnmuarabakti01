@@ -92,7 +92,7 @@ export default function SuratKelakuanBaik() {
                 mengikuti seleksi Penerimaan Peserta Didik Baru (PPDB) pada sekolah lanjutan
               </p>
 
-              <TandaTanganKepala />
+              <TandaTanganKepala tanggal={store.sekolah.tglSuratKelakuanBaik} />
             </div>
           </CardContent>
         </Card>
