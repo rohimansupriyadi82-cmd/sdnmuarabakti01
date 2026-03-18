@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi PPDB 2026 - SDN MUARA BAKTI 01</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        .container { max-width: 900px; margin-top: 30px; margin-bottom: 50px; }
+        .dashboard-card { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden; }
+        .header-section { background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); color: white; padding: 40px 30px; text-align: center; }
+        .section-container { padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px solid rgba(0,0,0,0.05); }
+        .sec-anak { background-color: #e3f2fd; border-left: 8px solid #0d6efd; }
+        .sec-ortu { background-color: #fce4ec; border-left: 8px solid #d81b60; }
+        .sec-periodik { background-color: #fffde7; border-left: 8px solid #fbc02d; }
+        .section-title { font-weight: bold; margin-bottom: 15px; color: #333; text-transform: uppercase; display: flex; align-items: center; }
+        .section-title i { margin-right: 10px; font-size: 1.2rem; }
+        
+        label { font-size: 0.85rem; font-weight: 600; color: #555; display: block; margin-bottom: 5px; }
+        label i { margin-right: 5px; color: #1a2a6c; width: 15px; text-align: center; }
+
+        .form-control, .form-select { 
+            border-radius: 8px; 
+            margin-bottom: 10px; 
+            min-width: 145px; 
+        }
+
+        .btn-simpan { background: linear-gradient(to right, #11998e, #38ef7d); color:white; padding: 15px; font-weight: bold; width: 100%; border-radius: 10px; border: none; font-size: 1.2rem; cursor: pointer; transition: 0.3s; }
+        .btn-simpan:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+
+        @keyframes kedip {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        .efek-kedip { animation: kedip 1s infinite; }
+
+        .kuota-wrapper { background: #f8f9fa; border-bottom: 2px solid #eee; padding: 20px; }
+        .progress { height: 20px; border-radius: 10px; background-color: #e9ecef; }
+        .progress-bar { font-size: 0.75rem; font-weight: bold; }
+
+        #bukti-pendaftaran { display: none; }
+        .cert-container { 
+            background: white; 
+            padding: 40px; 
+            border: 15px double #1a2a6c; 
+            position: relative; 
+            border-radius: 0; 
+            box-shadow: 0 0 40px rgba(0,0,0,0.1); 
+        }
+        .cert-watermark { 
+            position: absolute; 
+            top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); 
+            opacity: 0.06; 
+            width: 350px; 
+            z-index: 0; 
+        }
+        .cert-content { position: relative; z-index: 1; }
+        .cert-header { border-bottom: 3px solid #333; margin-bottom: 20px; padding-bottom: 10px; }
+        
+        /* REVISI POSISI JUDUL CENTER PRESISI */
+        .title-barcode-row {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Menarik konten ke tengah */
+            margin: 30px 0;
+            position: relative;     /* Menjadi acuan untuk posisi barcode */
+            width: 100%;
+            min-height: 120px;
+        }
+
+        .bukti-title {
+            text-decoration: underline;
+            letter-spacing: 2px;
+            margin: 0;
+            text-align: center;
+            width: 100%;            /* Memastikan teks mengambil ruang penuh untuk center */
+            font-size: 1.75rem;
+        }
+
+        .barcode-area {
+            position: absolute;     /* Membuat barcode melayang keluar dari alur teks */
+            right: 0;               /* Menempel di sisi kanan kontainer */
+            top: 50%;
+            transform: translateY(-50%); /* Menjaga barcode tetap center secara vertikal */
+            text-align: center;
+        }
+
+        .barcode-img {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #eee;
+            padding: 5px;
+            background: white;
+        }
+
+        .info-row { display: flex; border-bottom: 1px dashed #ccc; padding: 12px 0; align-items: flex-start; }
+        .info-label { width: 35%; color: #555; font-weight: 600; font-size: 0.9rem; }
+        .info-value { width: 65%; font-weight: bold; color: #000; line-height: 1.5; }
+        
+        .locked-form {
+            opacity: 0.5;
+            pointer-events: none;
+            filter: grayscale(1);
+        }
+
+        .app-footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        @media print { 
+            body { background: white; }
+            .no-print { display: none !important; } 
+            .container { margin: 0; max-width: 100%; width: 100%; }
+            #bukti-pendaftaran { display: block !important; padding: 0; }
+            .cert-container { border: 10px double #1a2a6c; box-shadow: none; }
+            .app-footer { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="main-content">
+    <div class="dashboard-card shadow">
+        <div class="header-section">
+            <h2 class="fw-bold mb-0">PENDAFTARAN PESERTA DIDIK BARU (SD)</h2>
+            <h4 class="mb-0">Tahun Pelajaran 2026/2027</h4>
+            <p class="mb-0 mt-2 opacity-75"><i class="fa-solid fa-school"></i> SDN MUARA BAKTI 01 KEC. BABELAN</p>
+        </div>
+
+        <div class="kuota-wrapper no-print">
+            <div class="d-flex justify-content-between mb-2">
+                <span class="fw-bold small text-secondary"><i class="fa-solid fa-chart-line"></i> STATUS KUOTA PENDAFTARAN SD</span>
+                <span class="fw-bold small" id="info_angka_kuota">Memproses data...</span>
+            </div>
+            <div class="progress mb-2">
+                <div id="bar_kuota" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%">0%</div>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span class="small text-muted">Daya Tampung: 56 Siswa (2 Rombel)</span>
+                <span class="small fw-bold text-danger efek-kedip" id="label_sisa">Sisa: -</span>
+            </div>
+        </div>
+
+        <div class="p-4 bg-white border-bottom">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold"><i class="fa-solid fa-building-columns"></i> NAMA SEKOLAH TUJUAN</label>
+                    <input type="text" id="nama_sekolah" class="form-control border-primary" value="SDN MUARA BAKTI 01" readonly>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-dark fw-bold mb-3">🔍 VALIDASI USIA SD (Per 1 Juli 2026)</h6>
+                    <div class="row align-items-center">
+                        <div class="col-md-5">
+                            <input type="date" id="input_cek_tgl" class="form-control" onchange="sinkronUsia()">
+                        </div>
+                        <div class="col-md-7">
+                            <span id="hasil_hitung" class="fw-bold text-primary" style="font-size: 0.95rem;">0 Thn, 0 Bln, 0 Hr</span> 
+                            <span id="ket_status" class="badge bg-secondary p-2 ms-1">Masukkan Tanggal</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form id="formPendaftaran" class="p-4 locked-form">
+            <input type="hidden" name="ket_usia" id="hidden_ket_usia">
+
+            <div class="section-container sec-anak">
+                <div class="section-title"><i class="fa-solid fa-child"></i> I. IDENTITAS PESERTA DIDIK SD</div>
+                <div class="row">
+                    <div class="col-md-12"><label><i class="fa-solid fa-user"></i> Nama Lengkap</label><input type="text" name="nama" class="form-control" required placeholder="Sesuai Akte" oninput="this.value = this.value.toUpperCase()"></div>
+                    <div class="col-md-4"><label><i class="fa-solid fa-venus-mars"></i> Jenis Kelamin</label><select name="jk" class="form-select"><option>Laki-laki</option><option>Perempuan</option></select></div>
+                    <div class="col-md-4"><label><i class="fa-solid fa-id-card"></i> NISN</label><input type="text" name="nisn" class="form-control"></div>
+                    <div class="col-md-4"><label><i class="fa-solid fa-map-location-dot"></i> Tempat Lahir</label><input type="text" name="tempat_lahir" class="form-control" oninput="this.value = this.value.toUpperCase()"></div>
+                    <div class="col-md-4"><label><i class="fa-solid fa-calendar-days"></i> Tanggal Lahir</label><input type="date" name="tgl_lahir" id="tgl_asli" class="form-control" readonly></div>
+                    <div class="col-md-4"><label><i class="fa-solid fa-address-card"></i> NIK Siswa (16 Digit)</label><input type="number" name="nik" class="form-control" maxlength="16" oninput="limitInput(this)"></div>
+                    <div class="col-md-4"><label><i class="fa-solid fa-users-rectangle"></i> No. Kartu Keluarga</label><input type="number" name="no_kk" class="form-control" maxlength="16" oninput="limitInput(this)"></div>
+                    <div class="col-md-4"><label><i class="fa-solid fa-file-contract"></i> No. Akte Kelahiran</label><input type="text" name="no_akte" class="form-control"></div>
+                    <div class="col-md-4"><label><i class="fa-solid fa-mosque"></i> Agama</label><select name="agama" class="form-select"><option>Islam</option><option>Kristen</option><option>Katolik</option><option>Hindu</option><option>Buddha</option></select></div>
+                    <div class="col-md-4"><label><i class="fa-solid fa-credit-card"></i> Penerima KIP/PKH?</label><select name="pkh" class="form-select"><option>Tidak</option><option>Ya</option></select></div>
+                    <div class="col-md-12"><label><i class="fa-solid fa-house"></i> Alamat Rumah Lengkap</label><input type="text" name="alamat" class="form-control" placeholder="Jalan, RT/RW, Dusun" oninput="this.value = this.value.toUpperCase()"></div>
+                    <div class="col-md-4"><label><i class="fa-solid fa-envelope"></i> Kode Pos</label><input type="number" name="kode_pos" class="form-control"></div>
+                    <div class="col-md-4"><label><i class="fa-solid fa-sitemap"></i> Anak Ke-</label><input type="number" name="anak_ke" class="form-control"></div>
+                    <div class="col-md-4"><label><i class="fa-solid fa-house-user"></i> Jenis Tinggal</label><select name="tinggal" class="form-select"><option>Orang Tua</option><option>Wali</option><option>Asrama</option></select></div>
+                    <div class="col-md-6"><label><i class="fa-solid fa-bus"></i> Transportasi</label><select name="transportasi" class="form-select"><option>Jalan Kaki</option><option>Sepeda</option><option>Motor</option><option>Antar Jemput</option></select></div>
+                    <div class="col-md-6"><label><i class="fa-brands fa-whatsapp"></i> No HP Orang Tua (WA Aktif)</label><input type="text" name="hp" class="form-control" placeholder="08xxxxxx"></div>
+                </div>
+            </div>
+
+            <div class="section-container sec-ortu">
+                <div class="section-title"><i class="fa-solid fa-users"></i> II. IDENTITAS ORANG TUA</div>
+                <div class="row">
+                    <div class="col-md-6 border-end">
+                        <label class="text-primary fw-bold"><i class="fa-solid fa-person"></i> DATA AYAH</label>
+                        <input type="text" name="ayah_nama" class="form-control" placeholder="Nama Lengkap Ayah" oninput="this.value = this.value.toUpperCase()">
+                        <input type="number" name="ayah_nik" class="form-control" placeholder="NIK Ayah (16 Digit)" maxlength="16" oninput="limitInput(this)">
+                        <input type="number" name="ayah_tahun" class="form-control" placeholder="Tahun Lahir Ayah">
+                        
+                        <label>Pekerjaan Ayah</label>
+                        <select name="ayah_kerja" class="form-select">
+                            <option value="">-- Pilih Pekerjaan --</option>
+                            <option value="Tidak Bekerja">Tidak Bekerja</option>
+                            <option value="Guru dan Dosen">Guru dan Dosen</option>
+                            <option value="Nelayan">Nelayan</option>
+                            <option value="Petani">Petani</option>
+                            <option value="Peternak">Peternak</option>
+                            <option value="PNS/TNI/Polri">PNS/TNI/Polri</option>
+                            <option value="Karyawan Swasta">Karyawan Swasta</option>
+                            <option value="Pedagang Kecil">Pedagang Kecil</option>
+                            <option value="Pedagang Besar">Pedagang Besar</option>
+                            <option value="Wiraswasta">Wiraswasta</option>
+                            <option value="Wirausaha">Wirausaha</option>
+                            <option value="Buruh">Buruh</option>
+                            <option value="Pensiunan">Pensiunan</option>
+                            <option value="Tenaga Kerja Indonesia (TKI)">Tenaga Kerja Indonesia (TKI)</option>
+                            <option value="Tidak Dapat Diterapkan">Tidak Dapat Diterapkan</option>
+                            <option value="Sudah Meninggal">Sudah Meninggal</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                        
+                        <label>Penghasilan Bulanan Ayah</label>
+                        <select name="ayah_gaji" class="form-select">
+                            <option value="">-- Pilih Penghasilan --</option>
+                            <option>Kurang dari Rp. 500.000</option>
+                            <option>Rp. 500.000 - Rp. 999.999</option>
+                            <option>Rp. 1.000.000 - Rp. 1.999.999</option>
+                            <option>Rp. 2.000.000 - Rp. 4.999.999</option>
+                            <option>Rp. 5.000.000 - Rp. 20.000.000</option>
+                            <option>Lebih dari Rp. 20.000.000</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-danger fw-bold"><i class="fa-solid fa-person-breastfeeding"></i> DATA IBU</label>
+                        <input type="text" name="ibu_nama" class="form-control" placeholder="Nama Lengkap Ibu" oninput="this.value = this.value.toUpperCase()">
+                        <input type="number" name="ibu_nik" class="form-control" placeholder="NIK Ibu (16 Digit)" maxlength="16" oninput="limitInput(this)">
+                        <input type="number" name="ibu_tahun" class="form-control" placeholder="Tahun Lahir Ibu">
+                        
+                        <label>Pekerjaan Ibu</label>
+                        <select name="ibu_kerja" class="form-select">
+                            <option value="">-- Pilih Pekerjaan --</option>
+                            <option value="Tidak Bekerja">Tidak Bekerja</option>
+                            <option value="Guru dan Dosen">Guru dan Dosen</option>
+                            <option value="Nelayan">Nelayan</option>
+                            <option value="Petani">Petani</option>
+                            <option value="Peternak">Peternak</option>
+                            <option value="PNS/TNI/Polri">PNS/TNI/Polri</option>
+                            <option value="Karyawan Swasta">Karyawan Swasta</option>
+                            <option value="Pedagang Kecil">Pedagang Kecil</option>
+                            <option value="Pedagang Besar">Pedagang Besar</option>
+                            <option value="Wiraswasta">Wiraswasta</option>
+                            <option value="Wirausaha">Wirausaha</option>
+                            <option value="Buruh">Buruh</option>
+                            <option value="Pensiunan">Pensiunan</option>
+                            <option value="Tenaga Kerja Indonesia (TKI)">Tenaga Kerja Indonesia (TKI)</option>
+                            <option value="Tidak Dapat Diterapkan">Tidak Dapat Diterapkan</option>
+                            <option value="Sudah Meninggal">Sudah Meninggal</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                        
+                        <label>Penghasilan Bulanan Ibu</label>
+                        <select name="ibu_gaji" class="form-select">
+                            <option value="">-- Pilih Penghasilan --</option>
+                            <option>Tidak Berpenghasilan</option>
+                            <option>Kurang dari Rp. 500.000</option>
+                            <option>Rp. 500.000 - Rp. 999.999</option>
+                            <option>Rp. 1.000.000 - Rp. 1.999.999</option>
+                            <option>Rp. 2.000.000 - Rp. 4.999.999</option>
+                            <option>Rp. 5.000.000 - Rp. 20.000.000</option>
+                            <option>Lebih dari Rp. 20.000.000</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-container sec-periodik">
+                <div class="section-title"><i class="fa-solid fa-file-medical"></i> III. DATA PERIODIK PESERTA DIDIK</div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label><i class="fa-solid fa-school-flag"></i> Masuk Di Kelas</label>
+                        <select name="kelas" id="select_kelas" class="form-select">
+                            <option value="">- Pilih Usia Dulu -</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4"><label><i class="fa-solid fa-weight-scale"></i> Berat Badan (kg)</label><input type="number" name="bb" class="form-control"></div>
+                    <div class="col-md-4"><label><i class="fa-solid fa-ruler-vertical"></i> Tinggi Badan (cm)</label><input type="number" name="tb" class="form-control"></div>
+                    <div class="col-md-6"><label><i class="fa-solid fa-people-roof"></i> Jumlah Saudara Kandung</label><input type="number" name="saudara" class="form-control"></div>
+                    <div class="col-md-6">
+                        <label><i class="fa-solid fa-route"></i> Jarak Tempuh ke Sekolah</label>
+                        <select name="jarak" class="form-select" required>
+                            <option value="">-- Pilih Jarak --</option>
+                            <option>Kurang dari 1 km</option>
+                            <option>1 – 5 km</option>
+                            <option>5 – 10 km</option>
+                            <option>10 – 15 km</option>
+                            <option>Lebih dari 15 km</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" id="btn_simpan" class="btn-simpan shadow" onclick="kirimKeSpreadsheet()"><i class="fa-solid fa-floppy-disk"></i> SIMPAN DATA & CETAK BUKTI SD</button>
+        </form>
+    </div>
+
+    <div class="app-footer no-print">
+        <p>&copy; 2026 <strong>SDN MUARA BAKTI 01</strong>. All Rights Reserved.<br>
+        <small>Developed by Rohiman Supriyadi</small></p>
+    </div>
+</div>
+
+<div class="container" id="bukti-pendaftaran">
+    <div class="cert-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_Tut_Wuri_Handayani.png" class="cert-watermark" alt="watermark">
+        
+        <div class="cert-content">
+            <div class="cert-header text-center">
+                <h2 class="fw-bold mb-0" style="color: #1a2a6c;">PANITIA PPDB SD ONLINE 2026</h2>
+                <h4 class="fw-bold text-danger" id="b_sekolah"></h4>
+                <p class="mb-0 small text-muted">Kecamatan Babelan, Kabupaten Bekasi, Jawa Barat</p>
+            </div>
+
+            <div class="title-barcode-row">
+                <h3 class="bukti-title fw-bold">BUKTI PENDAFTARAN SD</h3>
+                
+                <div class="barcode-area">
+                    <img src="" id="b_barcode" class="barcode-img" alt="QR Code">
+                    <div style="font-size: 0.7rem; font-weight: bold; margin-top: 5px;" id="b_reg_label">REG-000000</div>
+                </div>
+            </div>
+
+            <div class="px-4">
+                <div class="info-row"><div class="info-label">NOMOR REGISTRASI</div><div class="info-value" style="color: #b21f1f;" id="b_reg"></div></div>
+                <div class="info-row"><div class="info-label">NAMA LENGKAP SISWA</div><div class="info-value text-uppercase" id="b_nama"></div></div>
+                <div class="info-row"><div class="info-label">STATUS VALIDASI USIA</div><div class="info-value text-primary" id="b_usia"></div></div>
+                <div class="info-row"><div class="info-label">WAKTU DAFTAR</div><div class="info-value" id="b_waktu"></div></div>
+            </div>
+
+            <div class="row mt-5 pt-3">
+                <div class="col-7">
+                    <div style="font-size: 0.8rem; border: 1px solid #ccc; padding: 10px; background: #f9f9f9;">
+                        <strong>PENTING:</strong><br>
+                        1. Simpan lembar bukti ini sebagai syarat verifikasi.<br>
+                        2. Lampirkan FC Akte Kelahiran & Kartu Keluarga.<br>
+                        3. Menyerahkan berkas asli saat verifikasi.
+                    </div>
+                </div>
+                <div class="col-5 text-center">
+                    <p class="mb-0">Babelan, <span id="b_tgl_ttd"></span></p>
+                    <p class="fw-bold mb-5">Panitia PPDB SD,</p>
+                    <p class="fw-bold mb-0">____________________</p>
+                </div>
+            </div>
+            <div class="text-center mt-4 no-print">
+                <button class="btn btn-success btn-lg px-5 shadow" onclick="window.print()"><i class="fa-solid fa-print"></i> CETAK SEKARANG</button>
+                <button class="btn btn-outline-secondary btn-lg px-4 ms-2" onclick="window.location.reload()">KEMBALI</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqPWXrth0O7ieUqt0BH9igTjKWb8Gf8qBmlLomghbx-E1sbFfh5mVLF-vFhwJKP_0/exec"; 
+    const KUOTA_MAKSIMAL = 56; 
+
+    async function ambilDataKuota() {
+    try {
+        const response = await fetch(SCRIPT_URL + "?action=count&t=" + new Date().getTime());
+        const data = await response.json();
+        updateTampilanKuota(data.jumlah || 0);
+    } catch (e) {
+        console.error("Gagal ambil kuota:", e);
+        updateTampilanKuota(0);
+    }
+}
+
+    function updateTampilanKuota(sudahDaftar) {
+        const terdaftar = parseInt(sudahDaftar) || 0;
+        const sisa = KUOTA_MAKSIMAL - terdaftar;
+        const persen = (terdaftar / KUOTA_MAKSIMAL) * 100;
+        
+        const bar = document.getElementById("bar_kuota");
+        const info = document.getElementById("info_angka_kuota");
+        const labelSisa = document.getElementById("label_sisa");
+        const btn = document.getElementById("btn_simpan");
+
+        bar.style.width = persen + "%";
+        bar.innerText = Math.round(persen) + "%";
+        info.innerText = terdaftar + " Terdaftar";
+        labelSisa.innerText = "Sisa: " + (sisa < 0 ? 0 : sisa) + " Kursi";
+
+        if (terdaftar >= KUOTA_MAKSIMAL) {
+            bar.classList.replace("bg-success", "bg-danger");
+            btn.disabled = true;
+            btn.innerText = "MAAF, KUOTA SD PENUH";
+            btn.style.background = "gray";
+        }
+    }
+
+    window.onload = ambilDataKuota;
+
+    function limitInput(el) { 
+        if (el.value.length > el.maxLength) el.value = el.value.slice(0, el.maxLength); 
+    }
+
+    function sinkronUsia() {
+        let tgl = document.getElementById("input_cek_tgl").value;
+        if(!tgl) return;
+        
+        let birthDate = new Date(tgl);
+        let targetDate = new Date("2026-07-01");
+
+        let years = targetDate.getFullYear() - birthDate.getFullYear();
+        let months = targetDate.getMonth() - birthDate.getMonth();
+        let days = targetDate.getDate() - birthDate.getDate();
+
+        if (days < 0) {
+            months--;
+            let lastMonth = new Date(targetDate.getFullYear(), targetDate.getMonth(), 0);
+            days += lastMonth.getDate();
+        }
+        if (months < 0) {
+            years--;
+            months += 12;
+        }
+        
+        let textUsia = years + " Thn, " + months + " Bln, " + days + " Hr";
+        document.getElementById("hasil_hitung").innerText = textUsia;
+        document.getElementById("tgl_asli").value = tgl;
+        
+        let k = "";
+        let formEl = document.getElementById("formPendaftaran");
+        let statusBadge = document.getElementById("ket_status");
+        let selectKelas = document.getElementById("select_kelas");
+
+        if (years >= 6) {
+            k = years >= 7 ? "USIA PRIORITAS SD" : "MEMENUHI SYARAT SD";
+            statusBadge.className = "badge p-2 " + (years >= 7 ? "bg-success" : "bg-primary");
+            formEl.classList.remove("locked-form");
+            selectKelas.innerHTML = '<option value="Kelas 1">Kelas 1</option>';
+        } else {
+            k = "BELUM CUKUP USIA SD";
+            statusBadge.className = "badge p-2 bg-danger";
+            formEl.classList.add("locked-form");
+            selectKelas.innerHTML = '<option value="">Belum Cukup Usia</option>';
+            alert("Maaf, usia minimal masuk SD adalah 6 tahun per 1 Juli 2026.");
+        }
+        
+        statusBadge.innerText = k;
+        document.getElementById("hidden_ket_usia").value = k + " (" + textUsia + ")";
+    }
+
+    async function kirimKeSpreadsheet() {
+        const form = document.getElementById('formPendaftaran');
+        const btn = document.getElementById('btn_simpan');
+        
+        if(!form.nama.value || form.nik.value.length != 16) { 
+            alert("⚠️ Nama Lengkap dan NIK (16 digit) wajib diisi!"); 
+            return; 
+        }
+        
+        btn.disabled = true; 
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sedang Mengirim...';
+
+        const formData = new FormData(form);
+        const dataObj = { 
+            timestamp: new Date().toLocaleString('id-ID'), 
+            sekolah_tujuan: document.getElementById('nama_sekolah').value 
+        };
+        
+        formData.forEach((value, key) => {
+            dataObj[key] = (["nik", "no_kk", "ayah_nik", "ibu_nik", "nisn"].includes(key)) ? "'" + value : value;
+        });
+
+        try {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(dataObj),
+                mode: 'no-cors'
+            });
+
+            let regNum = "SD-" + Math.floor(100000 + Math.random() * 900000);
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('bukti-pendaftaran').style.display = 'block';
+            
+            document.getElementById('b_reg').innerText = regNum;
+            document.getElementById('b_reg_label').innerText = regNum;
+            document.getElementById('b_sekolah').innerText = dataObj.sekolah_tujuan;
+            document.getElementById('b_nama').innerText = dataObj.nama;
+            document.getElementById('b_usia').innerText = dataObj.ket_usia;
+            document.getElementById('b_waktu').innerText = dataObj.timestamp;
+            document.getElementById('b_tgl_ttd').innerText = new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
+            
+            const qrData = `REG:${regNum}|NAMA:${dataObj.nama}|NIK:${dataObj.nik}`;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData)}`;
+            document.getElementById('b_barcode').src = qrUrl;
+
+            window.scrollTo(0, 0);
+
+        } catch (e) { 
+            alert("❌ Terjadi kesalahan pengiriman."); 
+            btn.disabled = false; 
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> SIMPAN DATA';
+        }
+    }
+</script>
+</body>
+</html>

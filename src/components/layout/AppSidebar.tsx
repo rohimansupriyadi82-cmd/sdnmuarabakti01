@@ -2,7 +2,7 @@ import {
   BookOpen, Calendar, ChevronRight, ClipboardList, 
   FileText, GraduationCap, LayoutDashboard, LogOut, 
   Settings, Users, BarChart, Download, Printer,
-  School, ChevronDown
+  School, ChevronDown, CreditCard, LayoutGrid, ClipboardCheck, Banknote
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -19,12 +19,16 @@ import {
 
 import { exportNilaiToExcel } from "@/lib/exportExcel";
 import { toast } from "sonner";
+import logoBekasi from "@/assets/logo-bekasi.png";
 
 const administrasiGuruKelasItems = [
-  { title: "Cetak Kartu Ujian", url: "/print/kartu-ujian", icon: Printer },
-  { title: "Generate Nomor Meja", url: "/generate/nomor-meja", icon: Users },
-  { title: "Data Murid & NISN", url: "/data-siswa", icon: Users },
-  { title: "Olah Nilai & Raport.", url: "/nilai/7", icon: BookOpen },
+  { title: "Cetak Kartu Ujian", url: "/aplikasi_kartu_ujian.V2.html", icon: CreditCard },
+  { title: "Generate Nomor Meja", url: "/aplikasi nomor meja.html", icon: LayoutGrid },
+  { title: "Data Murid & NISN", url: "/absen_murid.html", icon: Users },
+  { title: "Absensi Guru", url: "/absen.html", icon: ClipboardCheck },
+  { title: "Tanda Terima Honor", url: "/tanda terima honor.html", icon: Banknote },
+  { title: "Buku Kas Umum (BKU)", url: "/bku.html", icon: BookOpen },
+  { title: "Aplikasi SPMB", url: "/Aplikasi_SPMB_SDN Muara Bakti 01.html", icon: FileText },
 ];
 
 const dataMasterItems = [
@@ -132,7 +136,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-r-0">
       <SidebarHeader className="p-4 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
-          <img src="/src/assets/logo-bekasi.png" alt="Logo" className="h-12 w-12" />
+          <img src={logoBekasi} alt="Logo" className="h-12 w-12" />
           {!collapsed && (
             <div className="flex flex-col text-left">
               <span className="text-sm font-semibold text-sidebar-foreground/90">Aplikasi Olah Nilai</span>

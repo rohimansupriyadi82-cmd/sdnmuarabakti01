@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Sinkronisasi BKU - Babelan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --primary-green: #1b5e20;
+            --light-green: #66bb6a;
+            --danger-red: #d32f2f;
+            --bg-color: #e8f5e9;
+            --white: #ffffff;
+            --marquee-bg: linear-gradient(90deg, #fbc02d, #ffeb3b, #fbc02d); 
+            --marquee-text: #000000;
+            --marquee-border: #f9a825;
+            --bank-blue: #e3f2fd;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- Style Running Text Modern --- */
+        .marquee-container {
+            background: var(--marquee-bg);
+            color: var(--marquee-text);
+            padding: 10px 0;
+            font-weight: 800;
+            font-size: 14px;
+            overflow: hidden;
+            width: 100%;
+            border-top: 3px solid var(--marquee-border);
+            border-bottom: 3px solid var(--marquee-border);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 5px;
+            position: relative;
+        }
+
+        .marquee-text {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 30s linear infinite;
+        }
+
+        .marquee-text i {
+            margin: 0 10px;
+            color: #d32f2f;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        @keyframes kedip-merah {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.05); color: #ff0000; }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .status-perbaikan {
+            animation: kedip-merah 0.8s infinite;
+            display: inline-block;
+        }
+
+        .main-wrapper {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1400px;
+            align-items: flex-start;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        .form-container { width: 380px; flex-shrink: 0; }
+        .form-body { padding: 20px; }
+        .form-group { margin-bottom: 12px; }
+        .row-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        label {
+            display: block;
+            font-size: 10px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            background-color: #fcfcfc;
+            font-size: 13px;
+        }
+
+        input[readonly] { background-color: #f0f0f0; color: #777; }
+        
+        .input-bank { background-color: var(--bank-blue); border: 1px solid #bbdefb; }
+
+        .selisih-box {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            border: 1px dashed #ccc;
+        }
+
+        .selisih-val { font-size: 16px; font-weight: bold; display: block; }
+        .status-label { font-size: 12px; font-weight: bold; text-transform: uppercase; }
+
+        .btn-simpan {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--light-green);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            font-size: 13px;
+        }
+
+        .btn-simpan:hover { background-color: var(--primary-green); transform: translateY(-2px); }
+
+        .table-container { flex-grow: 1; }
+        .table-header-info { background-color: var(--primary-green); color: white; padding: 20px; text-align: center; }
+        .table-wrapper { padding: 20px; overflow-x: auto; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        th { background-color: #f8f9fa; padding: 10px; border-bottom: 2px solid #eee; text-align: center; color: #333; }
+        td { padding: 8px 5px; border-bottom: 1px solid #eee; text-align: center; }
+
+        .row-jenjang {
+            background-color: #f1f8e9;
+            font-weight: bold;
+            text-align: left !important;
+            color: var(--primary-green);
+        }
+        
+        .row-jenjang i { margin-right: 8px; }
+
+        .badge-ok { background-color: #2e7d32; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 10px;}
+        .badge-cek { background-color: var(--danger-red); color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 10px;}
+        .text-muted { color: #ccc; font-style: italic; }
+
+        footer { margin-top: 20px; font-size: 10px; color: #888; }
+    </style>
+</head>
+<body>
+
+<audio id="audioHore" src="https://assets.mixkit.co/active_storage/sfx/2012/2012-preview.mp3" preload="auto"></audio>
+
+<div class="main-wrapper">
+    <div class="card form-container">
+        <div class="card-header"><i class="fas fa-file-signature"></i> Pendampingan BKU</div>
+        <div class="form-body">
+            <div class="row-group">
+                <div class="form-group">
+                    <label><i class="fas fa-calendar-alt"></i> Periode Laporan</label>
+                    <select id="bulan">
+                        <option value="JAN">Januari</option><option value="FEB">Februari</option>
+                        <option value="MAR">Maret</option><option value="APR">April</option>
+                        <option value="MEI">Mei</option><option value="JUN">Juni</option>
+                        <option value="JUL">Juli</option><option value="AGU">Agustus</option>
+                        <option value="SEP">September</option><option value="OKT">Oktober</option>
+                        <option value="NOV">November</option><option value="DES">Desember</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-key"></i> NPSN</label>
+                    <input type="text" id="npsn" placeholder="8 Digit" oninput="cariSekolah()">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-school"></i> Nama Lembaga</label>
+                <input type="text" id="nama_sekolah" readonly>
+            </div>
+
+            <hr>
+
+            <div class="row-group">
+                <div class="form-group">
+                    <label><i class="fas fa-history"></i> SiLPA Tahun 2025</label>
+                    <input type="text" id="silfa" value="Rp 0" oninput="inputRupiah(this)">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-university"></i> Saldo Awal Rek. Koran</label>
+                    <input type="text" id="awal_koran" class="input-bank" value="Rp 0" oninput="inputRupiah(this)">
+                </div>
+            </div>
+
+            <div class="row-group">
+                <div class="form-group">
+                    <label><i class="fas fa-wallet"></i> Saldo Akhir Rekening</label>
+                    <input type="text" id="akhir_koran" class="input-bank" value="Rp 0" oninput="inputRupiah(this)">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-book"></i> Saldo BKU</label>
+                    <input type="text" id="bku_arkas" value="Rp 0" oninput="inputRupiah(this)">
+                </div>
+            </div>
+
+            <div class="selisih-box">
+                <label>Hasil Verifikasi Selisih</label>
+                <span class="selisih-val" id="val_selisih">Rp 0</span>
+                <span class="status-label" id="status_teks">-</span>
+            </div>
+
+            <button class="btn-simpan" onclick="simpanData()">
+                <i class="fas fa-save"></i> SIMPAN DATA MONITORING
+            </button>
+            <button onclick="hapusSemuaData()" style="width: 100%; margin-top: 10px; background: none; border: none; color: #d32f2f; cursor: pointer; font-size: 10px;">HAPUS SEMUA DATA LOKAL</button>
+        </div>
+    </div>
+
+    <div class="card table-container">
+        <div class="table-header-info">
+            <h2><i class="fas fa-chart-line"></i> DASHBOARD PENDAMPINGAN SINKRONISASI BKU</h2>
+            <p>Penyajian Data Real-Time Periode Anggaran 2026</p>
+        </div>
+        
+        <div class="marquee-container">
+            <div class="marquee-text">
+                <i class="fas fa-bullhorn"></i> <span>CATATAN:</span> APLIKASI INI HANYALAH INSTRUMEN PEMBANTU. VERIFIKASI AKHIR YANG SAH TETAP BERADA PADA PROSES PEMERIKSAAN MANUAL OLEH ADMIN BOSP DINAS PENDIDIKAN KABUPATEN BEKASI. <i class="fas fa-exclamation-triangle"></i> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align: left;"><i class="fas fa-list-ol"></i> NAMA LEMBAGA</th>
+                        <th>KECAMATAN</th>
+                        <th>JAN</th><th>FEB</th><th>MAR</th><th>APR</th><th>MEI</th><th>JUN</th>
+                        <th>JUL</th><th>AGU</th><th>SEP</th><th>OKT</th><th>NOV</th><th>DES</th>
+                    </tr>
+                </thead>
+                <tbody id="main-table-body">
+                    <tr id="header-tk" class="row-jenjang"><td colspan="14"><i class="fas fa-child"></i> JENJANG: TAMAN KANAK-KANAK (TK)</td></tr>
+                    <tr id="header-sd" class="row-jenjang"><td colspan="14"><i class="fas fa-graduation-cap"></i> JENJANG: SEKOLAH DASAR (SD)</td></tr>
+                    <tr id="header-kb" class="row-jenjang"><td colspan="14"><i class="fas fa-users"></i> JENJANG: KB / SPS</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<footer>&copy; By. Rohiman Supriyadi</footer>
+
+<script>
+    const databaseSekolah = {
+        "20219135": { "nama": "SD NEGERI BABELAN KOTA 01", "kec": "Babelan" },
+        "20219136": { "nama": "SD NEGERI BABELAN KOTA 02", "kec": "Babelan" },
+        "20219130": { "nama": "SD NEGERI BABELAN KOTA 03", "kec": "Babelan" },
+        "20219129": { "nama": "SD NEGERI BABELAN KOTA 04", "kec": "Babelan" },
+        "20219128": { "nama": "SD NEGERI BABELAN KOTA 05", "kec": "Babelan" },
+        "20219127": { "nama": "SD NEGERI BABELAN KOTA 06", "kec": "Babelan" },
+        "20219126": { "nama": "SD NEGERI BABELAN KOTA 07", "kec": "Babelan" },
+        "20219125": { "nama": "SD NEGERI BABELAN KOTA 08", "kec": "Babelan" },
+        "20219124": { "nama": "SD NEGERI BABELAN KOTA 09", "kec": "Babelan" },
+        "20219122": { "nama": "SD NEGERI BAHAGIA 01", "kec": "Babelan" },
+        "20219103": { "nama": "SD NEGERI BAHAGIA 02", "kec": "Babelan" },
+        "20219086": { "nama": "SD NEGERI BAHAGIA 03", "kec": "Babelan" },
+        "20219085": { "nama": "SD NEGERI BAHAGIA 04", "kec": "Babelan" },
+        "20219084": { "nama": "SD NEGERI BAHAGIA 05", "kec": "Babelan" },
+        "20219083": { "nama": "SD NEGERI BAHAGIA 06", "kec": "Babelan" },
+        "69970952": { "nama": "SD NEGERI BAHAGIA 07", "kec": "Babelan" },
+        "20219087": { "nama": "SD NEGERI BUNI BAKTI 01", "kec": "Babelan" },
+        "20219088": { "nama": "SD NEGERI BUNI BAKTI 02", "kec": "Babelan" },
+        "20245324": { "nama": "SD NEGERI BUNI BAKTI 03", "kec": "Babelan" },
+        "20219089": { "nama": "SD NEGERI BUNI BAKTI 04", "kec": "Babelan" },
+        "20218895": { "nama": "SD NEGERI HURIP JAYA 01", "kec": "Babelan" },
+        "20218894": { "nama": "SD NEGERI HURIP JAYA 02", "kec": "Babelan" },
+        "20218893": { "nama": "SD NEGERI HURIP JAYA 03", "kec": "Babelan" },
+        "20218238": { "nama": "SD NEGERI KEBALEN 01", "kec": "Babelan" },
+        "20218239": { "nama": "SD NEGERI KEBALEN 02", "kec": "Babelan" },
+        "20218252": { "nama": "SD NEGERI KEBALEN 03", "kec": "Babelan" },
+        "20218251": { "nama": "SD NEGERI KEBALEN 04", "kec": "Babelan" },
+        "20218250": { "nama": "SD NEGERI KEBALEN 05", "kec": "Babelan" },
+        "20218249": { "nama": "SD NEGERI KEBALEN 06", "kec": "Babelan" },
+        "20218248": { "nama": "SD NEGERI KEBALEN 07", "kec": "Babelan" },
+        "20218247": { "nama": "SD NEGERI KEDUNG JAYA 01", "kec": "Babelan" },
+        "20218246": { "nama": "SD NEGERI KEDUNG JAYA 02", "kec": "Babelan" },
+        "20218245": { "nama": "SD NEGERI KEDUNG JAYA 03", "kec": "Babelan" },
+        "20218244": { "nama": "SD NEGERI KEDUNG PENGAWAS 01", "kec": "Babelan" },
+        "20218243": { "nama": "SD NEGERI KEDUNG PENGAWAS 02", "kec": "Babelan" },
+        "20218242": { "nama": "SD NEGERI KEDUNG PENGAWAS 03", "kec": "Babelan" },
+        "20218241": { "nama": "SD NEGERI KEDUNG PENGAWAS 04", "kec": "Babelan" },
+        "20218290": { "nama": "SD NEGERI MUARA BAKTI 01", "kec": "Babelan" },
+        "20218289": { "nama": "SD NEGERI MUARA BAKTI 02", "kec": "Babelan" },
+        "20218288": { "nama": "SD NEGERI MUARA BAKTI 03", "kec": "Babelan" },
+        "20218287": { "nama": "SD NEGERI MUARA BAKTI 04", "kec": "Babelan" },
+        "20218136": { "nama": "SD NEGERI PANTAI HURIP 01", "kec": "Babelan" },
+        "20218135": { "nama": "SD NEGERI PANTAI HURIP 02", "kec": "Babelan" },
+        "20218134": { "nama": "SD NEGERI PANTAI HURIP 03", "kec": "Babelan" },
+        "20218133": { "nama": "SD NEGERI PANTAI HURIP 04", "kec": "Babelan" },
+        "70001627": { "nama": "SD FIKRUL AKBAR ISLAMIC SCHOOL", "kec": "Babelan" },
+        "70061083": { "nama": "SD IBNU SINA WORLD ISLAMIC SCHOOL", "kec": "Babelan" },
+        "69753154": { "nama": "SD IT ATTAQWA 02", "kec": "Babelan" },
+        "70043949": { "nama": "SD MUTIARA PERTIWI 2", "kec": "Babelan" },
+        "69963153": { "nama": "SDIT AL FATTAH", "kec": "Babelan" },
+        "20267936": { "nama": "SDIT ASSUADAA", "kec": "Babelan" },
+        "20245409": { "nama": "SDIT BINA INSANI", "kec": "Babelan" },
+        "20247246": { "nama": "SDIT DARUTTAQWA", "kec": "Babelan" },
+        "70040886": { "nama": "SDIT GLOBAL INSANI 2", "kec": "Babelan" },
+        "70004316": { "nama": "SDIT GLOBAL MADANI", "kec": "Babelan" },
+        "69980411": { "nama": "SDIT INSAN TAQWA BEKASI", "kec": "Babelan" },
+        "60725220": { "nama": "SDIT KUN FAYAKUN", "kec": "Babelan" },
+        "20251913": { "nama": "SDIT MODERN BANI LUQMAN", "kec": "Babelan" },
+        "70033634": { "nama": "SDIT MUHAMMAD AL-FATIH", "kec": "Babelan" },
+        "70012697": { "nama": "SDS CALVARY 2", "kec": "Babelan" },
+        "20245419": { "nama": "SDS IT ATTAQWA", "kec": "Babelan" },
+        "69853557": { "nama": "SDS IT BINA INSAN CITA", "kec": "Babelan" },
+        "69852843": { "nama": "SDS IT HANIYA", "kec": "Babelan" },
+        "69883591": { "nama": "SDS IT IBNUL JAZARI", "kec": "Babelan" },
+        "69852844": { "nama": "SDS PLUS AL-BINA", "kec": "Babelan" },
+        "20245429": { "nama": "SD TIARA HARAPAN JAYA", "kec": "Babelan" },
+        "60724878": { "nama": "TK AL - BINA", "kec": "Babelan" },
+        "69755594": { "nama": "TK AL HIDAYAH", "kec": "Babelan" },
+        "70037941": { "nama": "TK AL IHSAN", "kec": "Babelan" },
+        "70056650": { "nama": "TK AL LUKMANIYYAH", "kec": "Babelan" },
+        "69826389": { "nama": "TK AL-FALAH MUARA BAKTI", "kec": "Babelan" },
+        "69826242": { "nama": "TK AL-KAUTSAR", "kec": "Babelan" },
+        "69826228": { "nama": "TK AL-MISHBAH", "kec": "Babelan" },
+        "70048269": { "nama": "TK ALFALIK", "kec": "Babelan" },
+        "70038381": { "nama": "TK AMAL SHOLIH PUTRA", "kec": "Babelan" },
+        "69825662": { "nama": "TK AMANAH", "kec": "Babelan" },
+        "69757896": { "nama": "TK AN NAJAH", "kec": "Babelan" },
+        "70046231": { "nama": "TK AN NUR", "kec": "Babelan" },
+        "70052227": { "nama": "TK ANAK BANGSA", "kec": "Babelan" },
+        "60724890": { "nama": "TK ASSADIYAH", "kec": "Babelan" },
+        "70048472": { "nama": "TK ASSYAHMI", "kec": "Babelan" },
+        "69862568": { "nama": "TK ATTAQWA ISLAMIC PRE-SCHOOL", "kec": "Babelan" },
+        "69825917": { "nama": "TK AZ ZAINI", "kec": "Babelan" },
+        "70013601": { "nama": "TK AZ-ZAHRA", "kec": "Babelan" },
+        "70047215": { "nama": "TK AZZAHRO", "kec": "Babelan" },
+        "69956916": { "nama": "TK BINA INSANI", "kec": "Babelan" },
+        "69826082": { "nama": "TK BINA INSANI", "kec": "Babelan" },
+        "69826225": { "nama": "TK BUDI KARYA ANUGERAH", "kec": "Babelan" },
+        "69826394": { "nama": "TK BUNDA DEBORA", "kec": "Babelan" },
+        "69954720": { "nama": "TK BUTTERFLY", "kec": "Babelan" },
+        "69911413": { "nama": "TK CALVARY III", "kec": "Babelan" },
+        "70027149": { "nama": "TK CENDEKIA", "kec": "Babelan" },
+        "70043736": { "nama": "TK CIPTA MUTIARA", "kec": "Babelan" },
+        "70052139": { "nama": "TK DEVI AULIA", "kec": "Babelan" },
+        "70035857": { "nama": "TK ISLAM AL-FAYADH", "kec": "Babelan" },
+        "69895502": { "nama": "TK ISLAM AL-IKHWAN", "kec": "Babelan" },
+        "70014813": { "nama": "TK ISLAM AL-KAUTSAR", "kec": "Babelan" },
+        "69826223": { "nama": "TK ISLAM AR-RIDHO", "kec": "Babelan" },
+        "70047217": { "nama": "TK ISLAM AS SAIDAH", "kec": "Babelan" },
+        "69826045": { "nama": "TK ISLAM AZ ZAHRA", "kec": "Babelan" },
+        "70035978": { "nama": "TK ISLAM BAITUN NUR", "kec": "Babelan" },
+        "69826400": { "nama": "TK ISLAM DARUL AMAL", "kec": "Babelan" },
+        "69826424": { "nama": "TK ISLAM DARUTTAQWA", "kec": "Babelan" },
+        "69826234": { "nama": "TK ISLAM MUTIARA INSANI", "kec": "Babelan" },
+        "69826073": { "nama": "TK ISLAM NABILAH", "kec": "Babelan" },
+        "69826137": { "nama": "TK ISLAM NUR ALIF", "kec": "Babelan" },
+        "69826432": { "nama": "TK ISLAM PLUS AL-FATH", "kec": "Babelan" },
+        "69826384": { "nama": "TK ISLAM PLUS AR-RIZKI", "kec": "Babelan" },
+        "69826279": { "nama": "TK ISLAM PLUS SAKINAH", "kec": "Babelan" },
+        "69826404": { "nama": "TK ISLAM TAMAN RAHARJA", "kec": "Babelan" },
+        "70010504": { "nama": "TK ISLAM TERPADU ADAMS SCHOOL", "kec": "Babelan" },
+        "69826131": { "nama": "TK ISLAM TERPADU AULIA", "kec": "Babelan" },
+        "69825989": { "nama": "TK ISLAM TERPADU SALSABILA", "kec": "Babelan" },
+        "69967554": { "nama": "TK IT AR-RACHMAN", "kec": "Babelan" },
+        "69825930": { "nama": "TK IT GHOZALAH", "kec": "Babelan" },
+        "69825661": { "nama": "TK KHAIRUNNISA", "kec": "Babelan" },
+        "69826367": { "nama": "TK MUTIARA PERTIWI", "kec": "Babelan" },
+        "69966715": { "nama": "TK MUTIARA PERTIWI 2", "kec": "Babelan" },
+        "70052673": { "nama": "TK NASYRUL KHOIR AL ISLAMI", "kec": "Babelan" },
+        "69826415": { "nama": "TK NUR ADNNISA", "kec": "Babelan" },
+        "70012065": { "nama": "TK NURUL HAKIM", "kec": "Babelan" },
+        "70002606": { "nama": "TK NURUL HIDAYAH", "kec": "Babelan" },
+        "69826430": { "nama": "TK PARAMITA 1", "kec": "Babelan" },
+        "69944825": { "nama": "TK SANTO YUSUF MUTIARA GADING CITY", "kec": "Babelan" },
+        "69825663": { "nama": "TK SEKAR MELATI", "kec": "Babelan" },
+        "70036679": { "nama": "TK TAHFIDZ IBNUL JAZARI", "kec": "Babelan" },
+        "70034997": { "nama": "TK TAHFIZH DAN RUMAH QURAN AQSHA", "kec": "Babelan" },
+        "69826023": { "nama": "TK TERPADU HARAPAN BAHAGIA", "kec": "Babelan" },
+        "69825658": { "nama": "TK TIARA HARAPAN JAYA", "kec": "Babelan" },
+        "69893623": { "nama": "TK TUNAS BERSINAR", "kec": "Babelan" },
+        "69826403": { "nama": "TK UKHUWAH", "kec": "Babelan" },
+        "69826126": { "nama": "TK. AR-RAHIM", "kec": "Babelan" },
+        "69826143": { "nama": "TK. INSAN AULIA MADANI", "kec": "Babelan" },
+        "69826406": { "nama": "TK. IQRO ISLAMIC PRESCHOOL", "kec": "Babelan" },
+        "69825923": { "nama": "TK. ISLAM PUTRI KEMBAR", "kec": "Babelan" },
+        "69826282": { "nama": "TK. KASIH IBU", "kec": "Babelan" },
+        "69825653": { "nama": "TK. KINASIH", "kec": "Babelan" },
+        "69825654": { "nama": "TK. TUNAS HARAPAN", "kec": "Babelan" },
+        "70001954": { "nama": "TKIB CENDIKIA MADANI", "kec": "Babelan" },
+        "69960316": { "nama": "TKIT AL - FATTAH", "kec": "Babelan" },
+        "70050861": { "nama": "TKIT AL HIKMAH", "kec": "Babelan" },
+        "70051026": { "nama": "TKIT AL MUMTAZ", "kec": "Babelan" },
+        "70004201": { "nama": "TKIT AL-WAFIA SAKINATUL ISLAM", "kec": "Babelan" },
+        "70056283": { "nama": "TKIT ATTAQWA 01", "kec": "Babelan" },
+        "69954710": { "nama": "TKIT FIKRUL AKBAR", "kec": "Babelan" },
+        "70051434": { "nama": "TKIT FIKRUL AKBAR II", "kec": "Babelan" },
+        "69938609": { "nama": "TKIT GEMA NURANI 03", "kec": "Babelan" },
+        "70013625": { "nama": "TKIT GENERASI EMAS", "kec": "Babelan" },
+        "70027609": { "nama": "TKIT MUHAMMAD AL-FATIH", "kec": "Babelan" },
+        "70045650": { "nama": "TKIT SALSABILA", "kec": "Babelan" },
+        "69825880": { "nama": "TKIT. AL-MUHAJIRIN", "kec": "Babelan" },
+        "69825869": { "nama": "BAITUSSALAM", "kec": "Babelan" },
+        "69826014": { "nama": "KALIMUSADA", "kec": "Babelan" },
+        "69826303": { "nama": "KB AL-HIDAYAH", "kec": "Babelan" },
+        "70010849": { "nama": "KB Al-Husna", "kec": "Babelan" },
+        "69826162": { "nama": "KB AL-KAUSAR", "kec": "Babelan" },
+        "69808884": { "nama": "KB ALFARISI", "kec": "Babelan" },
+        "69808684": { "nama": "KB AN-NUR", "kec": "Babelan" },
+        "69826344": { "nama": "KB ATTAUFIQ", "kec": "Babelan" },
+        "69826216": { "nama": "KB AZ - ZAHRA", "kec": "Babelan" },
+        "69808788": { "nama": "KB BAITUL HUSNA", "kec": "Babelan" },
+        "69825901": { "nama": "KB BERLIAN HARAPAN", "kec": "Babelan" },
+        "69826196": { "nama": "KB BINA MANDIRI", "kec": "Babelan" },
+        "69825942": { "nama": "KB BINTANG", "kec": "Babelan" },
+        "69808699": { "nama": "KB BINTANG II", "kec": "Babelan" },
+        "69808680": { "nama": "KB DAAR EL HIDAYAH", "kec": "Babelan" },
+        "69825897": { "nama": "KB DAARUL HUDA", "kec": "Babelan" },
+        "69916031": { "nama": "KB DAARUL ILMI", "kec": "Babelan" },
+        "69825958": { "nama": "KB DEVI AULIA", "kec": "Babelan" },
+        "69826380": { "nama": "KB EL-HIKAM", "kec": "Babelan" },
+        "70000737": { "nama": "KB FATHONAH SMART", "kec": "Babelan" },
+        "69918272": { "nama": "KB FATIMIYAH", "kec": "Babelan" },
+        "69825906": { "nama": "KB HANIFAH", "kec": "Babelan" },
+        "69825532": { "nama": "KB HIDAYATULLAH", "kec": "Babelan" },
+        "69808979": { "nama": "KB IMAM ASY-SYAFI I", "kec": "Babelan" },
+        "69966039": { "nama": "KB INSAN CENDEKIA MADANI", "kec": "Babelan" },
+        "69915194": { "nama": "KB KARIMAH", "kec": "Babelan" },
+        "69826243": { "nama": "KB KASIH IBU", "kec": "Babelan" },
+        "69825937": { "nama": "KB MELATI PUTIH", "kec": "Babelan" },
+        "70048471": { "nama": "KB MENTARI", "kec": "Babelan" },
+        "69826191": { "nama": "KB MUTIARA HATI", "kec": "Babelan" },
+        "70047803": { "nama": "KB MUTIARA PERTIWI", "kec": "Babelan" },
+        "69981873": { "nama": "KB NUR HIDAYAH", "kec": "Babelan" },
+        "69808967": { "nama": "KB NURAINIYAH", "kec": "Babelan" },
+        "69826324": { "nama": "KB NURUL FALAH", "kec": "Babelan" },
+        "69825996": { "nama": "KB PELANGI", "kec": "Babelan" },
+        "70024056": { "nama": "KB Permata", "kec": "Babelan" },
+        "69916020": { "nama": "KB PERMATA KIDS", "kec": "Babelan" },
+        "69825853": { "nama": "KB QURROTA A YUN", "kec": "Babelan" },
+        "69916030": { "nama": "KB SEKAR MELATI SANUR", "kec": "Babelan" },
+        "69756767": { "nama": "KB TUNAS BANGSA", "kec": "Babelan" },
+        "69825890": { "nama": "KB WIJAYA KUSUMA", "kec": "Babelan" },
+        "69981900": { "nama": "KBIT A INUN", "kec": "Babelan" },
+        "69825953": { "nama": "NURSA ADAH", "kec": "Babelan" },
+        "69826003": { "nama": "SARI MADU", "kec": "Babelan" },
+        "69825995": { "nama": "SARTIKA", "kec": "Babelan" },
+        "69825918": { "nama": "MEKAR JAYA", "kec": "Babelan" },
+        "69826087": { "nama": "SPS ROSE", "kec": "Babelan" },
+        "69826326": { "nama": "TELADAN", "kec": "Babelan" }
+    };
+
+    // Objek Utama Data Tersimpan
+    let storageData = JSON.parse(localStorage.getItem("bku_monitoring_2026")) || {};
+
+    window.onload = function() {
+        loadData();
+    };
+
+    function getMonthKey(index) {
+        return ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"][index];
+    }
+
+    function inputRupiah(target) {
+        let value = target.value.replace(/[^0-9]/g, '');
+        if (value === "" || value === "0") {
+            target.value = "Rp 0";
+        } else {
+            target.value = "Rp " + parseInt(value).toLocaleString('id-ID');
+        }
+        hitungSelisih();
+    }
+
+    function parseAngka(str) {
+        return parseFloat(str.replace(/[^0-9]/g, '')) || 0;
+    }
+
+    function cariSekolah() {
+        const npsn = document.getElementById("npsn").value.trim();
+        const info = databaseSekolah[npsn];
+        if (info) {
+            document.getElementById("nama_sekolah").value = info.nama;
+            hitungSelisih();
+        } else {
+            document.getElementById("nama_sekolah").value = "";
+        }
+    }
+
+    function hitungSelisih() {
+        const silfa = parseAngka(document.getElementById("silfa").value);
+        const awalRK = parseAngka(document.getElementById("awal_koran").value);
+        const akhirRK = parseAngka(document.getElementById("akhir_koran").value);
+        const bkuArkas = parseAngka(document.getElementById("bku_arkas").value);
+        
+        let sisiArkas = 0;
+        if (silfa > 0) {
+            sisiArkas = awalRK - silfa;
+        } else {
+            sisiArkas = 0;
+        }
+
+        const sisiBank = akhirRK - bkuArkas;
+        const selisih = sisiBank - sisiArkas;
+        
+        const elS = document.getElementById("val_selisih");
+        const elT = document.getElementById("status_teks");
+
+        elS.innerText = "Rp " + Math.abs(selisih).toLocaleString('id-ID');
+        elT.classList.remove("status-perbaikan");
+
+        if (Math.abs(selisih) < 1 && (akhirRK !== 0 || bkuArkas !== 0)) {
+            elT.innerText = "SESUAI (OK)"; 
+            elT.style.color = "green";
+            elS.style.color = "green";
+        } else if (akhirRK === 0 && bkuArkas === 0) {
+            elT.innerText = "-"; 
+            elT.style.color = "#555";
+            elS.style.color = "#000";
+        } else {
+            elT.innerText = "MEMBUTUHKAN PERBAIKAN"; 
+            elT.style.color = "red";
+            elS.style.color = "red";
+            elT.classList.add("status-perbaikan");
+        }
+    }
+
+    function bungaBunga() {
+        const audio = document.getElementById("audioHore");
+        audio.currentTime = 0; 
+        audio.play().catch(e => console.log("Audio play blocked by browser"));
+
+        const duration = 3 * 1000;
+        const end = Date.now() + duration;
+        (function frame() {
+            confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ff69b4', '#ff1493', '#66bb6a'] });
+            confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ff69b4', '#ff1493', '#66bb6a'] });
+            if (Date.now() < end) { requestAnimationFrame(frame); }
+        }());
+    }
+
+    // Fungsi Render Baris (Digunakan saat Simpan & Load)
+    function renderRow(npsn, info) {
+        let row = document.getElementById(`row-${npsn}`);
+        if (!row) {
+            row = document.createElement("tr");
+            row.id = `row-${npsn}`;
+            
+            const nama = info.nama.toUpperCase();
+            let headerRowId = "";
+            if (nama.includes("SD ") || nama.includes("SDIT") || nama.includes("SDS ")) {
+                headerRowId = "header-sd";
+            } else if (nama.includes("TK")) {
+                headerRowId = "header-tk";
+            } else {
+                headerRowId = "header-kb";
+            }
+
+            const headerRow = document.getElementById(headerRowId);
+            row.innerHTML = `
+                <td style="text-align: left;">${info.nama}</td>
+                <td>${info.kec.toUpperCase()}</td>
+                ${Array(12).fill().map((_, i) => `<td data-month="${getMonthKey(i)}"><span class="text-muted">-</span></td>`).join('')}
+            `;
+            headerRow.parentNode.insertBefore(row, headerRow.nextSibling);
+        }
+
+        // Isi data per bulan dari storage
+        const cells = row.querySelectorAll('td[data-month]');
+        cells.forEach(cell => {
+            const mKey = cell.getAttribute('data-month');
+            if (storageData[npsn] && storageData[npsn].months[mKey]) {
+                const status = storageData[npsn].months[mKey];
+                cell.innerHTML = (status === "SESUAI (OK)") ? 
+                    '<span class="badge-ok"><i class="fas fa-check-circle"></i> ✓ OK</span>' : 
+                    '<span class="badge-cek"><i class="fas fa-exclamation-circle"></i> ⚠ CEK</span>';
+            }
+        });
+    }
+
+    function simpanData() {
+        const npsn = document.getElementById("npsn").value.trim();
+        const bulan = document.getElementById("bulan").value;
+        const status = document.getElementById("status_teks").innerText;
+
+        if (!databaseSekolah[npsn]) { alert("NPSN Tidak Terdaftar!"); return; }
+        if (status === "-" || status === "") { alert("Mohon lengkapi nominal saldo."); return; }
+
+        // Simpan ke Object storageData
+        if (!storageData[npsn]) {
+            storageData[npsn] = {
+                nama: databaseSekolah[npsn].nama,
+                kec: databaseSekolah[npsn].kec,
+                months: {}
+            };
+        }
+        storageData[npsn].months[bulan] = status;
+
+        // Simpan ke LocalStorage
+        localStorage.setItem("bku_monitoring_2026", JSON.stringify(storageData));
+
+        if (status === "SESUAI (OK)") { bungaBunga(); }
+
+        // Render ke tabel
+        renderRow(npsn, databaseSekolah[npsn]);
+
+        setTimeout(() => {
+            alert("Selamat YA, Data berhasil disimpan secara lokal.");
+            resetForm();
+        }, 500);
+    }
+
+    function loadData() {
+        Object.keys(storageData).forEach(npsn => {
+            if (databaseSekolah[npsn]) {
+                renderRow(npsn, databaseSekolah[npsn]);
+            }
+        });
+    }
+
+    function hapusSemuaData() {
+        if (confirm("Apakah Anda yakin ingin menghapus semua data monitoring yang tersimpan di browser ini?")) {
+            localStorage.removeItem("bku_monitoring_2026");
+            location.reload();
+        }
+    }
+
+    function resetForm() {
+        document.getElementById("npsn").value = "";
+        document.getElementById("nama_sekolah").value = "";
+        ["silfa", "awal_koran", "akhir_koran", "bku_arkas"].forEach(id => {
+            document.getElementById(id).value = "Rp 0";
+        });
+        document.getElementById("val_selisih").innerText = "Rp 0";
+        document.getElementById("val_selisih").style.color = "black";
+        document.getElementById("status_teks").innerText = "-";
+        document.getElementById("status_teks").classList.remove("status-perbaikan");
+        document.getElementById("npsn").focus();
+    }
+</script>
+
+</body>
+</html>

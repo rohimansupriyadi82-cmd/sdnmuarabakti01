@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGAP - Sistem Informasi Guru & Absensi Presisi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        :root { --width-f4: 330mm; --height-f4: 215mm; }
+        body { font-family: 'Tahoma', sans-serif; background: #e2e8f0; margin: 0; color: #1e293b; }
+        
+        .top-nav-candy { 
+            background: linear-gradient(90deg, #d31027 0%, #ea384d 100%);
+            box-shadow: 0 4px 20px rgba(211, 16, 39, 0.3);
+        }
+
+        .nav-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .input-candy {
+            background: white;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+        }
+
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+        .blink-text {
+            animation: blinker 1.5s linear infinite;
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        .preview-wrapper { 
+            display: flex; 
+            justify-content: center; 
+            padding: 40px 20px; 
+            background: #cbd5e1; 
+            min-height: calc(100vh - 200px); 
+            overflow-x: auto;
+        }
+        
+        .print-container { 
+            background: white; 
+            width: var(--width-f4); 
+            height: var(--height-f4); 
+            padding: 10mm 12mm; 
+            box-sizing: border-box; 
+            color: black; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15); 
+        }
+
+        .table-absen { 
+            border: 1.5pt solid #000; 
+            border-collapse: collapse; 
+            width: 100%; 
+            table-layout: fixed;
+        }
+        .table-absen th { 
+            border: 1pt solid #000; 
+            padding: 4px 0; 
+            background-color: #f3f4f6 !important; 
+            font-size: 7.5pt; 
+            font-weight: bold; 
+        }
+        .table-absen td { 
+            border: 1pt solid #000; 
+            padding: 2px; 
+            font-size: 8.5pt; 
+            height: 35px; 
+            vertical-align: middle; 
+            word-wrap: break-word;
+        }
+
+        /* Warna Hari Libur */
+        .sun-holiday { background-color: #fca5a5 !important; color: #7f1d1d; }
+        .sat-holiday { background-color: #e2e8f0 !important; color: #475569; }
+        
+        /* Gaya Kalender Mini */
+        .holiday-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            background: white;
+            padding: 5px;
+            border-radius: 8px;
+        }
+        .day-box {
+            font-size: 9px;
+            padding: 2px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 4px;
+            border: 1px solid #fee2e2;
+            color: #000;
+        }
+        .day-box.selected {
+            background-color: #ef4444 !important;
+            color: white !important;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; }
+            .preview-wrapper { padding: 0 !important; overflow: visible; }
+            .print-container { box-shadow: none !important; margin: 0; }
+            @page { size: 330mm 215mm; margin: 0; }
+            .sun-holiday { background-color: #fca5a5 !important; -webkit-print-color-adjust: exact; }
+            .sat-holiday { background-color: #e2e8f0 !important; -webkit-print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body class="flex flex-col">
+
+    <header class="top-nav-candy text-white p-4 no-print sticky top-0 z-50">
+        <div class="max-w-[1600px] mx-auto">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-4">
+                    <div class="bg-white p-2 rounded-lg">
+                        <i class="fas fa-fingerprint text-3xl text-red-600"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-black tracking-tighter leading-none">SIGAP</h1>
+                        <p class="text-[10px] opacity-90 uppercase font-bold tracking-wider text-yellow-200">
+                            Sistem Informasi Guru & Absensi Presisi
+                        </p>
+                        <div class="mt-1">
+                            <span class="text-[9px] uppercase opacity-80 block leading-none">Disusun oleh:</span>
+                            <span class="text-xs blink-text">Rohiman Supriyadi</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="window.print()" class="bg-yellow-400 hover:bg-white text-red-700 px-6 py-2 rounded-xl font-black shadow-lg transition-all flex items-center gap-2">
+                    <i class="fas fa-print"></i> CETAK LAPORAN
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="nav-card p-3">
+                    <h2 class="text-[10px] font-black mb-2 flex items-center gap-2 uppercase text-yellow-200">
+                        <i class="fas fa-database"></i> 1. Database CSV
+                    </h2>
+                    <div class="flex flex-col gap-2">
+                        <input type="file" id="csvFileInput" accept=".csv" class="text-[10px] file:bg-red-700 file:text-white file:border-0 file:rounded file:px-2 bg-white/10 p-1 rounded cursor-pointer">
+                        <input type="text" id="inNPSN" oninput="syncFromCSV()" placeholder="Cari NPSN..." class="w-full p-2 rounded-lg text-xs input-candy font-bold">
+                    </div>
+                </div>
+
+                <div class="nav-card p-3">
+                    <h2 class="text-[10px] font-black mb-2 flex items-center gap-2 uppercase text-yellow-200">
+                        <i class="fas fa-user-plus"></i> 2. Input Guru
+                    </h2>
+                    <div class="flex gap-2 mb-2">
+                        <input type="text" id="manNama" onkeypress="if(event.key === 'Enter') tambahNama()" placeholder="Nama Guru..." class="flex-1 p-2 rounded-lg text-xs input-candy font-bold">
+                        <button onclick="tambahNama()" class="bg-green-500 hover:bg-green-600 text-white px-3 rounded-lg"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <button onclick="clearLocalData()" class="w-full text-[9px] bg-red-800/40 hover:bg-red-700 py-1.5 rounded-md transition-all uppercase font-black">Kosongkan List</button>
+                </div>
+
+                <div class="nav-card p-3">
+                    <h2 class="text-[10px] font-black mb-2 flex items-center gap-2 uppercase text-yellow-200">
+                        <i class="fas fa-cog"></i> 3. Dokumen
+                    </h2>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="inLembaga" oninput="updateHeader(); saveCurrentState();" placeholder="Lembaga" class="p-2 rounded-lg text-xs input-candy font-bold">
+                        <input type="text" id="inKepala" oninput="updateHeader(); saveCurrentState();" placeholder="Kepala" class="p-2 rounded-lg text-xs input-candy font-bold">
+                        <select id="selBulan" onchange="generateTable(); updateHeader(); refreshHolidayPicker(); saveCurrentState();" class="p-2 rounded-lg text-xs input-candy font-bold">
+                            <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
+                            <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
+                            <option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option>
+                            <option value="10">Oktober</option><option value="11">November</option><option value="12" selected>Desember</option>
+                        </select>
+                        <input type="date" id="inTanggalTtd" oninput="updateHeader(); saveCurrentState();" class="p-2 rounded-lg text-xs input-candy font-bold">
+                    </div>
+                </div>
+
+                <div class="nav-card p-3 border-yellow-400">
+                    <h2 class="text-[10px] font-black mb-1 flex items-center justify-between uppercase text-yellow-200">
+                        <span><i class="fas fa-calendar-times"></i> 4. Atur Libur</span>
+                        <button onclick="clearHolidays()" class="text-[8px] bg-red-600 px-1 rounded text-white">Reset</button>
+                    </h2>
+                    <div id="holidayPicker" class="holiday-picker-grid mb-1">
+                        </div>
+                    <input type="hidden" id="inLiburCustom">
+                    <p class="text-[8px] opacity-90 leading-tight">*Klik tanggal di atas untuk merah/libur.</p>
+                </div>
+            </div>
+            
+            <div id="syncStatus" class="mt-2 text-[10px] italic text-red-100">
+                <i class="fas fa-info-circle"></i> Menunggu Database...
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1">
+        <div class="preview-wrapper">
+            <div id="printArea" class="print-container">
+                <div class="text-center mb-6">
+                    <h2 style="font-size: 11pt; font-weight: bold; text-transform: uppercase;">DAFTAR HADIR HARIAN PENDIDIK DAN TENAGA KEPENDIDIKAN</h2>
+                    <h2 id="dispLembaga" style="font-size: 16pt; font-weight: bold; text-transform: uppercase; margin: 0;">NAMA LEMBAGA SEKOLAH</h2>
+                    <p id="dispNPSN" style="font-size: 9pt; margin-bottom: 4px;">NPSN: -</p>
+                    <p id="dispPeriode" style="font-size: 10pt; font-weight: bold; text-transform: uppercase; border-bottom: 2pt solid #000; display: inline-block; padding: 0 60px; font-style: italic;">BULAN DESEMBER 2026</p>
+                </div>
+
+                <table class="table-absen" id="mainTable">
+                    <thead id="headTabel"></thead>
+                    <tbody id="bodyTabel"></tbody>
+                </table>
+
+                <div class="flex justify-end mt-8" style="font-size: 10.5pt; padding-right: 15mm;">
+                    <div class="text-center w-[80mm]">
+                        <p id="dispTglTtd" class="mb-1">Bekasi, ..........................</p>
+                        <p class="mb-16">Mengetahui,<br><strong>Kepala Sekolah</strong></p>
+                        <p id="dispNamaKepala" class="font-bold underline uppercase">.........................................</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let fullDatabase = [];
+        let currentListNama = [];
+        let selectedHolidays = [];
+
+        function formatTanggalIndo(dateStr) {
+            if(!dateStr) return "..........................";
+            const date = new Date(dateStr);
+            const opsi = { day: 'numeric', month: 'long', year: 'numeric' };
+            return date.toLocaleDateString('id-ID', opsi);
+        }
+
+        // FUNGSI BARU: Kalender Mini untuk Menu Sektor 4
+        function refreshHolidayPicker() {
+            const container = document.getElementById('holidayPicker');
+            const bulan = parseInt(document.getElementById('selBulan').value);
+            const jmlHari = new Date(2026, bulan, 0).getDate();
+            
+            container.innerHTML = '';
+            for(let i=1; i<=jmlHari; i++) {
+                const isSelected = selectedHolidays.includes(i);
+                const dayDiv = document.createElement('div');
+                dayDiv.className = `day-box ${isSelected ? 'selected' : ''}`;
+                dayDiv.innerText = i;
+                dayDiv.onclick = () => toggleHoliday(i);
+                container.appendChild(dayDiv);
+            }
+        }
+
+        function toggleHoliday(day) {
+            const idx = selectedHolidays.indexOf(day);
+            if(idx > -1) selectedHolidays.splice(idx, 1);
+            else selectedHolidays.push(day);
+            
+            document.getElementById('inLiburCustom').value = selectedHolidays.join(',');
+            refreshHolidayPicker();
+            generateTable();
+            saveCurrentState();
+        }
+
+        function clearHolidays() {
+            selectedHolidays = [];
+            document.getElementById('inLiburCustom').value = '';
+            refreshHolidayPicker();
+            generateTable();
+            saveCurrentState();
+        }
+
+        function saveCurrentState() {
+            const state = {
+                npsn: document.getElementById('inNPSN').value,
+                lembaga: document.getElementById('inLembaga').value,
+                kepala: document.getElementById('inKepala').value,
+                tglTtd: document.getElementById('inTanggalTtd').value,
+                bulan: document.getElementById('selBulan').value,
+                liburCustom: selectedHolidays,
+                listNama: currentListNama
+            };
+            localStorage.setItem('presenceAppState', JSON.stringify(state));
+        }
+
+        function loadCurrentState() {
+            const savedState = localStorage.getItem('presenceAppState');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                document.getElementById('inNPSN').value = state.npsn || "";
+                document.getElementById('inLembaga').value = state.lembaga || "";
+                document.getElementById('inKepala').value = state.kepala || "";
+                document.getElementById('inTanggalTtd').value = state.tglTtd || "";
+                document.getElementById('selBulan').value = state.bulan || "12";
+                selectedHolidays = state.liburCustom || [];
+                document.getElementById('inLiburCustom').value = selectedHolidays.join(',');
+                currentListNama = state.listNama || [];
+                updateHeader();
+                generateTable();
+                refreshHolidayPicker();
+            }
+        }
+
+        document.getElementById('csvFileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            Papa.parse(file, {
+                header: true, skipEmptyLines: true,
+                complete: function(res) {
+                    fullDatabase = res.data;
+                    localStorage.setItem('savedCSVData', JSON.stringify(fullDatabase));
+                    document.getElementById('syncStatus').innerHTML = `<i class="fas fa-check-circle"></i> Database Aktif`;
+                }
+            });
+        });
+
+        function syncFromCSV() {
+            const npsnInput = document.getElementById('inNPSN').value.trim();
+            if(!npsnInput || fullDatabase.length === 0) return;
+            const row = fullDatabase[0];
+            const colNPSN = Object.keys(row).find(k => k.toLowerCase().includes('npsn'));
+            const colSekolah = Object.keys(row).find(k => k.toLowerCase().includes('lembaga') || k.toLowerCase().includes('sekolah'));
+            const colGuru = Object.keys(row).find(k => k.toLowerCase().includes('guru') || k.toLowerCase() === 'nama');
+            const colKepala = Object.keys(row).find(k => k.toLowerCase().includes('kepala'));
+
+            const filtered = fullDatabase.filter(r => r[colNPSN] && r[colNPSN].toString().trim() === npsnInput);
+            if(filtered.length > 0) {
+                document.getElementById('inLembaga').value = filtered[0][colSekolah] || "";
+                if(colKepala) document.getElementById('inKepala').value = filtered[0][colKepala] || "";
+                currentListNama = filtered.map(item => item[colGuru] ? item[colGuru].toString().toUpperCase().trim() : "NONAME");
+            }
+            generateTable();
+            updateHeader();
+            saveCurrentState();
+        }
+
+        function updateHeader() {
+            const blnSelect = document.getElementById('selBulan');
+            const blnText = blnSelect.options[blnSelect.selectedIndex].text;
+            document.getElementById('dispLembaga').innerText = document.getElementById('inLembaga').value || "NAMA LEMBAGA SEKOLAH";
+            document.getElementById('dispNPSN').innerText = "NPSN: " + (document.getElementById('inNPSN').value || "-");
+            document.getElementById('dispPeriode').innerText = `BULAN ${blnText} 2026`;
+            document.getElementById('dispTglTtd').innerText = "Bekasi, " + formatTanggalIndo(document.getElementById('inTanggalTtd').value);
+            document.getElementById('dispNamaKepala').innerText = document.getElementById('inKepala').value || ".........................................";
+        }
+
+        function generateTable() {
+            const bulan = parseInt(document.getElementById('selBulan').value);
+            const tahun = 2026;
+            const jmlHari = new Date(tahun, bulan, 0).getDate();
+            const head = document.getElementById('headTabel');
+            const body = document.getElementById('bodyTabel');
+            
+            let htmlHead = `<tr><th rowspan="2" style="width:8mm">NO</th><th rowspan="2" style="width:55mm">NAMA LENGKAP</th><th colspan="${jmlHari}">TANGGAL</th><th rowspan="2" class="no-print" style="width: 10mm;"></th></tr><tr>`;
+            
+            let hariStatus = []; 
+
+            for(let d=1; d<=jmlHari; d++) {
+                const tglObj = new Date(tahun, bulan - 1, d);
+                const dayOfWeek = tglObj.getDay(); 
+                
+                let kelasWarna = "";
+                if (dayOfWeek === 0 || selectedHolidays.includes(d)) {
+                    kelasWarna = "sun-holiday"; 
+                } else if (dayOfWeek === 6) {
+                    kelasWarna = "sat-holiday"; 
+                }
+                
+                hariStatus.push(kelasWarna);
+                htmlHead += `<th class="${kelasWarna}" style="width:7.5mm">${d}</th>`;
+            }
+            head.innerHTML = htmlHead + `</tr>`;
+
+            body.innerHTML = '';
+            currentListNama.forEach((nama, i) => {
+                let row = `<tr><td class="text-center font-bold">${i+1}</td><td class="px-2 font-bold uppercase" style="font-size: 7.5pt">${nama}</td>`;
+                for(let d=0; d<jmlHari; d++) {
+                    row += `<td class="${hariStatus[d]}"></td>`;
+                }
+                row += `<td class="no-print text-center"><button onclick="hapusNama(${i})" class="text-red-600"><i class="fas fa-trash"></i></button></td></tr>`;
+                body.innerHTML += row;
+            });
+        }
+
+        function tambahNama() {
+            const val = document.getElementById('manNama').value.trim();
+            if(val) { 
+                currentListNama.push(val.toUpperCase()); 
+                document.getElementById('manNama').value = ''; 
+                generateTable(); 
+                saveCurrentState(); 
+            }
+        }
+
+        function hapusNama(idx) { 
+            currentListNama.splice(idx, 1); 
+            generateTable(); 
+            saveCurrentState(); 
+        }
+
+        function clearLocalData() { 
+            if(confirm("Hapus semua list guru?")) { 
+                currentListNama = []; 
+                generateTable(); 
+                saveCurrentState(); 
+            } 
+        }
+
+        window.onload = () => {
+            const savedCSV = localStorage.getItem('savedCSVData');
+            if (savedCSV) {
+                fullDatabase = JSON.parse(savedCSV);
+                document.getElementById('syncStatus').innerHTML = `<i class="fas fa-hdd"></i> Database Siap`;
+            }
+            loadCurrentState();
+            refreshHolidayPicker();
+        };
+    </script>
+</body>
+</html>

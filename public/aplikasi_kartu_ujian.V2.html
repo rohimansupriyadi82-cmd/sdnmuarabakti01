@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Kartu Ujian A4 - Precise Schedule v21</title>
+    <style>
+        /* RESET & DASAR */
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        body { font-family: 'Arial', sans-serif; margin: 0; background: #1a202c; color: white; }
+
+        /* PANEL KONTROL */
+        .no-print { padding: 20px; max-width: 1100px; margin: 0 auto; background: #2d3748; border-bottom: 5px solid #d32f2f; }
+        .grid-input { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        textarea, input, select { width: 100%; padding: 8px; margin-top: 5px; background: #1a202c; color: white; border: 1px solid #4a5568; font-size: 12px; border-radius: 4px; }
+        label { font-size: 11px; font-weight: bold; color: #a0aec0; }
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-print { flex: 2; padding: 15px; background: #d32f2f; font-weight: bold; border: none; cursor: pointer; color: white; border-radius: 4px; }
+        .btn-save { flex: 2; padding: 15px; background: #2f855a; font-weight: bold; border: none; cursor: pointer; color: white; border-radius: 4px; }
+        .btn-clear { flex: 1; padding: 15px; background: #4a5568; font-weight: bold; border: none; cursor: pointer; color: white; border-radius: 4px; }
+        .save-notif { font-size: 11px; color: #48bb78; margin-top: 5px; display: block; text-align: right; font-weight: bold; }
+
+        /* AREA CETAK - A4 PRESISI */
+        #print-area { background: #f0f4f8; }
+        .page-wrapper {
+            width: 210mm; min-height: 297mm; padding: 10mm; margin: 10px auto;
+            background: white; display: flex; flex-direction: column; 
+            align-items: center; justify-content: flex-start; gap: 8mm; 
+            page-break-after: always; position: relative;
+        }
+
+        /* KARTU */
+        .card { 
+            width: 185mm; height: 85mm; background: white; color: black; 
+            border: 2pt solid #d32f2f; display: flex; overflow: hidden; 
+            position: relative; border-radius: 8px; flex-shrink: 0;
+        }
+
+        /* WATERMARK GLOBAL */
+        .watermark-global {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; opacity: 0.05; font-size: 7pt; font-weight: bold;
+            display: flex; flex-wrap: wrap; align-content: space-around; justify-content: space-around;
+            transform: rotate(-15deg) scale(1.4); color: #d32f2f; z-index: 1;
+        }
+
+        /* SISI KIRI */
+        .side-left { 
+            width: 12mm; border-right: 1.5pt solid #d32f2f; 
+            display: flex; align-items: center; justify-content: center; 
+            background: #d32f2f; position: relative; z-index: 5;
+        }
+        .v-text { transform: rotate(-90deg); white-space: nowrap; font-size: 10pt; font-weight: bold; color: white; }
+
+        .center-data { width: 85mm; border-right: 1.5pt solid #d32f2f; padding: 3mm 4mm; display: flex; flex-direction: column; position: relative; z-index: 5; background: transparent; }
+        
+        /* KOP - DUAL LOGO */
+        .kop { display: flex; align-items: center; justify-content: space-between; height: 18mm; border-bottom: 2pt solid #d32f2f; padding-bottom: 2mm; }
+        .kop .logo-box { width: 14mm; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .kop img { max-width: 100%; max-height: 14mm; object-fit: contain; }
+        
+        .kop-text { text-align: center; flex-grow: 1; padding: 0 5px; }
+        .kop-text h1 { margin: 0; font-size: 8.5pt; text-transform: uppercase; line-height: 1.1; font-weight: 900; color: #b91c1c; }
+        .kop-text p { margin: 2px 0 0 0; font-size: 5.5pt; line-height: 1.1; font-weight: bold; }
+
+        .banner { background: linear-gradient(45deg, #d32f2f, #ff4d4d); color: white; text-align: center; padding: 3px; margin: 2mm 0; border-radius: 4px; }
+        .banner .jdl-utama { font-weight: bold; font-size: 9pt; display: block; letter-spacing: 1px; }
+        
+        .bio { width: 100%; font-size: 8pt; border-collapse: collapse; margin-top: 5px; background: transparent; }
+        .bio td { padding: 2px 0; font-weight: bold; vertical-align: top; }
+
+        .footer { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 1mm; height: 25mm; }
+        
+        .box-ruang { border: 2pt solid #d32f2f; width: 20mm; text-align: center; border-radius: 4px; overflow: hidden; background: white; margin-bottom: 1mm; }
+        .ruang-h { font-size: 7pt; display: block; border-bottom: 1.5pt solid #d32f2f; font-weight: bold; background: #d32f2f; color: white; }
+        .ruang-v { font-size: 13pt; font-weight: bold; display: block; padding: 2px 0; color: #b91c1c; }
+
+        .sign { text-align: center; font-size: 7pt; width: 50mm; position: relative; line-height: 1.2; }
+        .stempel-img { position: absolute; width: 18mm; left: 0; top: 4mm; opacity: 0.7; z-index: 6; pointer-events: none; }
+        .ttd-img { position: absolute; width: 22mm; left: 50%; transform: translateX(-50%); top: 5mm; z-index: 7; pointer-events: none; }
+
+        .side-right { flex: 1; padding: 2mm 3mm; display: flex; flex-direction: column; overflow: hidden; background: #fffafb; position: relative; z-index: 5; }
+        .sch-h { font-size: 8.5pt; font-weight: bold; text-align: center; color: #d32f2f; margin-bottom: 3px; border-bottom: 1px dashed #d32f2f; padding-bottom: 2px; }
+        
+        .table-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+        .sch-table { width: 100%; border-collapse: collapse; font-size: 6pt; table-layout: fixed; background: transparent; }
+        .sch-table th { background: linear-gradient(to bottom, #ff4d4d, #d32f2f); color: white; border: 1px solid #b91c1c; padding: 4px 1px; }
+        .sch-table td { border: 1px solid #feb2b2; padding: 3px 1px; text-align: center; color: #741b1b; font-weight: 700; background: rgba(255, 255, 255, 0.4); word-wrap: break-word; }
+
+        .motivation { font-size: 8.5pt; font-weight: 900; color: #d32f2f; text-align: center; font-style: italic; margin-top: auto; padding-bottom: 2mm; text-transform: uppercase; }
+
+        @media print {
+            @page { size: A4; margin: 0; }
+            body { background: white; margin: 0; padding: 0; }
+            .no-print { display: none !important; }
+            .page-wrapper { margin: 0; border: none; box-shadow: none; height: 297mm; }
+            #print-area { background: white; }
+            .card { border: 1.5pt solid #d32f2f; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <div class="grid-input">
+        <div>
+            <label>🏫 NAMA SEKOLAH</label>
+            <input type="text" id="inSekolah" placeholder="SDN NEGERI EXAMPLE">
+            <textarea id="inAlamat" placeholder="Alamat Lengkap Sekolah"></textarea>
+            <label>📅 TANGGAL KARTU</label>
+            <input type="date" id="inTglCetak">
+            <input type="text" id="inKota" placeholder="Kota (Contoh: Bekasi)">
+        </div>
+        <div>
+            <label>📂 DATA PESERTA (CSV: Nama;NISN;Kelas;TptLahir;TglLahir;NoMeja;Ruang)</label>
+            <input type="file" id="inCsv" onchange="importCSV(this)" style="margin-bottom:5px">
+            <div style="display:flex; gap:5px; margin-bottom:5px">
+                <div style="flex:1"><label>Stempel</label><input type="file" onchange="loadMedia(this, 'stempel')"></div>
+                <div style="flex:1"><label>TTD</label><input type="file" onchange="loadMedia(this, 'ttd')"></div>
+            </div>
+            <textarea id="inSiswa" rows="2" placeholder="Nama;NISN;Kelas;Tempat;Tanggal;NoMeja;Ruang" oninput="updateDropdownKelas()"></textarea>
+            
+            <label>🎯 PILIH KELAS (OTOMATIS DARI DATA)</label>
+            <select id="selKelas" onchange="render()">
+                <option value="ALL">-- SEMUA KELAS --</option>
+            </select>
+
+            <input type="text" id="inTP" value="2025/2026" placeholder="Tahun Pelajaran">
+        </div>
+        <div>
+            <label>📝 JUDUL KARTU</label>
+            <input type="text" id="inJudulKartu" value="KARTU PESERTA UJIAN">
+            <label>👤 PENANGGUNG JAWAB</label>
+            <input type="text" id="inTtdNama" placeholder="Nama Penanggung Jawab">
+            <input type="text" id="inNip" placeholder="NIP: 198XXXXXXXXXXXXXXX">
+            <label>📅 JADWAL (Hari | Waktu | Mapel)</label>
+            <textarea id="inJadwal" rows="3" placeholder="Senin, 13-03-2026 | 07.30-09.00 | Matematika"></textarea>
+            <span class="save-notif" id="saveStat">Ready.</span>
+        </div>
+    </div>
+    <div class="btn-group">
+        <button class="btn-save" onclick="manualSave()">💾 UPDATE TAMPILAN</button>
+        <button class="btn-print" onclick="window.print()">📄 CETAK PDF (A4)</button>
+        <button class="btn-clear" onclick="clearData()">🗑️ RESET</button>
+    </div>
+</div>
+
+<div id="print-area"></div>
+
+<script>
+    let mediaFiles = { stempel: '', ttd: '' };
+
+    function formatIndoDate(dateStr) {
+        if(!dateStr) return "";
+        const opsi = { day: 'numeric', month: 'long', year: 'numeric' };
+        return new Date(dateStr).toLocaleDateString('id-ID', opsi);
+    }
+
+    function formatDateSimple(dateStr) {
+        if(!dateStr) return "";
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}-${month}-${year}`;
+    }
+
+    // Fungsi baru untuk memperbarui dropdown kelas secara otomatis
+    function updateDropdownKelas() {
+        const sel = document.getElementById('selKelas');
+        const currentVal = sel.value; // Simpan pilihan saat ini agar tidak ter-reset
+        const lines = document.getElementById('inSiswa').value.split('\n').filter(l => l.trim());
+        
+        let daftarKelas = new Set();
+        lines.forEach(line => {
+            const d = line.split(/[;|\t]/);
+            if(d[2]) daftarKelas.add(d[2].trim());
+        });
+
+        // Reset dropdown tapi pertahankan opsi "SEMUA KELAS"
+        sel.innerHTML = '<option value="ALL">-- SEMUA KELAS --</option>';
+        
+        // Urutkan kelas secara alfabetis dan masukkan ke dropdown
+        Array.from(daftarKelas).sort().forEach(kls => {
+            const opt = document.createElement('option');
+            opt.value = kls;
+            opt.textContent = kls.toUpperCase();
+            sel.appendChild(opt);
+        });
+
+        // Kembalikan pilihan user jika masih ada di daftar baru
+        if (Array.from(daftarKelas).includes(currentVal)) {
+            sel.value = currentVal;
+        }
+    }
+
+    function importCSV(input) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            document.getElementById('inSiswa').value = e.target.result.split('\n').filter(l => l.trim()).join('\n');
+            document.getElementById('saveStat').innerText = "✅ CSV Loaded!";
+            updateDropdownKelas(); // Perbarui dropdown setelah load CSV
+            manualSave();
+        };
+        reader.readAsText(input.files[0]);
+    }
+
+    function manualSave() {
+        const data = {
+            sekolah: document.getElementById('inSekolah').value,
+            alamat: document.getElementById('inAlamat').value,
+            tp: document.getElementById('inTP').value,
+            siswa: document.getElementById('inSiswa').value,
+            ttdNama: document.getElementById('inTtdNama').value,
+            nip: document.getElementById('inNip').value,
+            kota: document.getElementById('inKota').value,
+            tglCetak: document.getElementById('inTglCetak').value,
+            jadwal: document.getElementById('inJadwal').value,
+            judulKartu: document.getElementById('inJudulKartu').value,
+            media: mediaFiles
+        };
+        localStorage.setItem('kartuA4_v21', JSON.stringify(data));
+        render();
+    }
+
+    function loadData() {
+        const saved = localStorage.getItem('kartuA4_v21');
+        if (saved) {
+            const data = JSON.parse(saved);
+            Object.keys(data).forEach(key => {
+                if(key !== 'media') {
+                    const el = document.getElementById('in' + key.charAt(0).toUpperCase() + key.slice(1));
+                    if(el) el.value = data[key];
+                }
+            });
+            if(data.media) mediaFiles = data.media;
+            updateDropdownKelas(); // Perbarui dropdown saat load data lama
+            render();
+        }
+    }
+
+    function loadMedia(input, type) {
+        const reader = new FileReader();
+        reader.onload = (e) => { mediaFiles[type] = e.target.result; manualSave(); };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    function clearData() { if(confirm("Hapus semua data?")) { localStorage.removeItem('kartuA4_v21'); location.reload(); } }
+
+    function render() {
+        const area = document.getElementById('print-area');
+        const filterKelas = document.getElementById('selKelas').value;
+        
+        let rawSiswa = document.getElementById('inSiswa').value.split('\n').filter(l => l.trim());
+        
+        // Logika Filter yang disesuaikan dengan data dropdown otomatis
+        let siswaInput = rawSiswa.filter(line => {
+            if (filterKelas === "ALL") return true;
+            const d = line.split(/[;|\t]/);
+            if (d.length < 3) return false;
+            return d[2].trim() === filterKelas;
+        });
+
+        const jadwalInput = document.getElementById('inJadwal').value.split('\n').filter(l => l.trim());
+        const namaSekolah = document.getElementById('inSekolah').value || 'NAMA SEKOLAH';
+        const alamatSekolah = document.getElementById('inAlamat').value || 'Alamat Belum Diisi';
+        const judulKartu = document.getElementById('inJudulKartu').value || 'KARTU PESERTA UJIAN';
+        const kotaTgl = (document.getElementById('inKota').value || 'Kota') + ", " + formatIndoDate(document.getElementById('inTglCetak').value);
+
+        let rowsJadwal = jadwalInput.map(l => {
+            const c = l.split('|');
+            return `<tr><td>${c[0]||''}</td><td>${c[1]||''}</td><td>${c[2]||''}</td></tr>`;
+        }).join('');
+
+        let watermarkHtml = '';
+        for(let w=0; w<40; w++) watermarkHtml += '<span>TUT WURI HANDAYANI</span>';
+
+        area.innerHTML = "";
+        
+        for (let i = 0; i < siswaInput.length; i += 3) {
+            const pageWrapper = document.createElement('div');
+            pageWrapper.className = 'page-wrapper';
+            const chunk = siswaInput.slice(i, i + 3);
+
+            pageWrapper.innerHTML = chunk.map(line => {
+                const d = line.split(/[;|\t]/); 
+                if(d.length < 6) return ""; 
+                const ttl = `${d[3] || ''}, ${formatDateSimple(d[4])}`;
+
+                return `
+                <div class="card">
+                    <div class="watermark-global">${watermarkHtml}</div>
+                    <div class="side-left"><div class="v-text">MEJA : ${d[5]}</div></div>
+                    <div class="center-data">
+                        <div class="kop">
+                            <div class="logo-box">
+                                <img src="/tutwuri_putih.png" alt="Logo Kiri" style="height: 60px;">
+                            </div>
+                            <div class="kop-text">
+                                <h1>${namaSekolah}</h1>
+                                <p>${alamatSekolah.replace(/\n/g, '<br>')}</p>
+                            </div>
+                            <div class="logo-box">
+                                <img src="/logo_bekasi.jpg" onerror="this.style.visibility='hidden'" alt="Logo Kanan" style="height: 60px;">
+                            </div>
+                        </div>
+                        <div class="banner">
+                            <span class="jdl-utama">${judulKartu}</span>
+                            <span style="font-size:7pt">TAHUN PELAJARAN ${document.getElementById('inTP').value}</span>
+                        </div>
+                        <table class="bio">
+                            <tr><td style="width:22mm">NAMA</td><td style="width:3mm">:</td><td style="text-transform:uppercase">${d[0]}</td></tr>
+                            <tr><td>NISN</td><td>:</td><td>${d[1]}</td></tr>
+                            <tr><td>KELAS</td><td>:</td><td>${d[2]}</td></tr>
+                            <tr><td>TTL</td><td>:</td><td>${ttl}</td></tr>
+                        </table>
+                        <div class="footer">
+                            <div class="box-ruang">
+                                <span class="ruang-h">RUANG</span>
+                                <span class="ruang-v">${d[6]}</span>
+                            </div>
+                            <div class="sign">
+                                ${kotaTgl}<br>Penanggung Jawab,<br><br><br>
+                                <b><u>${document.getElementById('inTtdNama').value}</u></b><br>
+                                NIP. ${document.getElementById('inNip').value}
+                                ${mediaFiles.stempel ? `<img src="${mediaFiles.stempel}" class="stempel-img">` : ''}
+                                ${mediaFiles.ttd ? `<img src="${mediaFiles.ttd}" class="ttd-img">` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="side-right">
+                        <div class="sch-h">JADWAL UJIAN</div>
+                        <div class="table-wrap">
+                            <table class="sch-table">
+                                <thead><tr><th style="width:36%">HARI</th><th style="width:28%">WAKTU</th><th>MAPEL</th></tr></thead>
+                                <tbody>${rowsJadwal}</tbody>
+                            </table>
+                            <div class="motivation">Selamat Mengerjakan</div>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+            area.appendChild(pageWrapper);
+        }
+    }
+    window.onload = loadData;
+</script>
+</body>
+</html>
