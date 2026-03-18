@@ -1,10 +1,12 @@
-import {
-  School, Users, Settings, FileText, Printer, BookOpen,
-  ChevronDown, GraduationCap, LayoutDashboard, LogOut,
+import { 
+  BookOpen, Calendar, ChevronRight, ClipboardList, 
+  FileText, GraduationCap, LayoutDashboard, Logout, 
+  Settings, Users, BarChart, Download, Printer
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
   SidebarHeader, SidebarFooter, useSidebar, SidebarSeparator
@@ -13,7 +15,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   Collapsible, CollapsibleContent, CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-
 const administrasiGuruKelasItems = [
   { title: "Cetak Kartu Ujian", url: "/print/kartu-ujian", icon: Printer },
   { title: "Generate Nomor Meja", url: "/generate/nomor-meja", icon: Users },
