@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
+        @media print { .no-print { display: none !important; } }
         :root { --width-f4: 330mm; }
         body { font-family: 'Tahoma', sans-serif; background: #f1f5f9; margin: 0; color: #1e293b; overflow-x: hidden; }
         
@@ -543,8 +544,6 @@
         window.onload = loadState;
     </script>
     <!-- Tombol Kembali Melayang -->
-    <a href="/" class="no-print" style="position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%); color: white; padding: 14px 28px; border-radius: 50px; text-decoration: none; font-weight: 800; font-family: 'Tahoma', sans-serif; box-shadow: 0 10px 25px rgba(13, 148, 136, 0.4); z-index: 9999; display: flex; align-items: center; gap: 10px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 2px solid rgba(255,255,255,0.2);" onmouseover="this.style.transform='scale(1.1) translateY(-5px)'; this.style.boxShadow='0 15px 30px rgba(13, 148, 136, 0.5)';" onmouseout="this.style.transform='scale(1) translateY(0)'; this.style.boxShadow='0 10px 25px rgba(13, 148, 136, 0.4)';">
-        <i class="fas fa-arrow-left"></i> ⬅ Kembali ke Dashboard
-    </a>
+    <a href="/" style="position:fixed; top:20px; left:20px; background:blue; color:white; padding:10px; border-radius:5px; text-decoration:none; z-index:9999;" class="no-print">⬅ Kembali ke Dashboard</a>
 </body>
 </html>
