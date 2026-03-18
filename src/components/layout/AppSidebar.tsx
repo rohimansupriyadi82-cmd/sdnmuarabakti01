@@ -1,6 +1,6 @@
 import { 
   BookOpen, Calendar, ChevronRight, ClipboardList, 
-  FileText, GraduationCap, LayoutDashboard, Logout, 
+  FileText, GraduationCap, LayoutDashboard, LogOut, 
   Settings, Users, BarChart, Download, Printer
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
