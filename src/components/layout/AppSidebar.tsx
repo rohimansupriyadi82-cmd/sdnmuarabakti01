@@ -1,7 +1,8 @@
 import { 
   BookOpen, Calendar, ChevronRight, ClipboardList, 
   FileText, GraduationCap, LayoutDashboard, LogOut, 
-  Settings, Users, BarChart, Download, Printer
+  Settings, Users, BarChart, Download, Printer,
+  School, ChevronDown
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -15,6 +16,7 @@ import {
 import {
   Collapsible, CollapsibleContent, CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+
 const administrasiGuruKelasItems = [
   { title: "Cetak Kartu Ujian", url: "/print/kartu-ujian", icon: Printer },
   { title: "Generate Nomor Meja", url: "/generate/nomor-meja", icon: Users },
@@ -103,9 +105,9 @@ function CollapsibleGroup({ label, icon: Icon, items, collapsed }: CollapsibleGr
                     ) : (
                       <NavLink
                         to={item.url}
-                        end
-                        className="hover:bg-sidebar-accent/10 transition-colors duration-200 rounded-md"
-                        activeClassName="text-sidebar-foreground bg-sidebar-accent/10 font-medium"
+                        className={({ isActive }) => 
+                          `w-full flex items-center hover:bg-sidebar-accent/10 transition-colors duration-200 rounded-md px-2 py-1.5 ${isActive ? "text-sidebar-foreground bg-sidebar-accent/10 font-medium" : ""}`
+                        }
                       >
                         {item.icon && <item.icon className="mr-2 h-4 w-4" />}
                         {!collapsed && <span className="text-data">{item.title}</span>}
@@ -149,9 +151,9 @@ export function AppSidebar() {
                 <SidebarMenuButton asChild>
                   <NavLink
                     to="/dashboard"
-                    end
-                    className="hover:bg-sidebar-accent/10 transition-colors duration-200 rounded-md"
-                    activeClassName="text-sidebar-foreground bg-sidebar-accent/10 font-medium"
+                    className={({ isActive }) => 
+                      `w-full flex items-center hover:bg-sidebar-accent/10 transition-colors duration-200 rounded-md px-2 py-1.5 ${isActive ? "text-sidebar-foreground bg-sidebar-accent/10 font-medium" : ""}`
+                    }
                   >
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     {!collapsed && <span>Dashboard</span>}
