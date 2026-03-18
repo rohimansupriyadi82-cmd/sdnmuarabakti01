@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Save, Calendar as CalendarIcon } from "lucide-react";
+import { Save, Calendar as CalendarIcon, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -26,14 +26,29 @@ export default function IdentitasKepalaSekolah() {
     toast.success("Identitas kepala sekolah berhasil disimpan");
   };
 
+  const handleResetData = () => {
+    if (confirm("Apakah Anda yakin? Semua data siswa, nilai, dan pengaturan akan dihapus permanen. Pastikan Anda sudah melakukan Backup.")) {
+      localStorage.clear();
+      toast.success("Seluruh data berhasil dihapus. Mereset aplikasi...");
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1500);
+    }
+  };
+
   return (
     <div className="max-w-3xl animate-fade-in space-y-4">
       <Card className="shadow-card">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-heading font-semibold">Identitas Kepala Sekolah</CardTitle>
-          <Button onClick={handleSave} size="sm" className="h-9">
-            <Save className="mr-2 h-4 w-4" /> Simpan
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={handleResetData} variant="destructive" size="sm" className="h-9">
+              <Trash2 className="mr-2 h-4 w-4" /> Reset Data
+            </Button>
+            <Button onClick={handleSave} size="sm" className="h-9">
+              <Save className="mr-2 h-4 w-4" /> Simpan
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

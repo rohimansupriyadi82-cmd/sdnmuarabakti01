@@ -21,10 +21,10 @@ export default function SuratKeteranganNISN() {
 
   useEffect(() => {
     if (siswa && barcodeRef.current) {
-      JsBarcode(barcodeRef.current, siswa.nisn || siswa.nama, {
+      JsBarcode(barcodeRef.current, `${siswa.nama} - ${siswa.nisn}`, {
         format: "CODE128",
-        width: 1.5,
-        height: 40,
+        width: 1.2,
+        height: 35,
         displayValue: true,
         fontSize: 10,
         margin: 0
