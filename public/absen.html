@@ -434,6 +434,11 @@
                 const sekolah = JSON.parse(rawSekolah);
                 if (sekolah.namaSekolah) document.getElementById('inLembaga').value = sekolah.namaSekolah;
                 if (sekolah.kepalaSekolah) document.getElementById('inKepala').value = sekolah.kepalaSekolah;
+                // Update tanggal jika ada
+                if (sekolah.tanggalSurat) {
+                    const tglInput = document.getElementById('inTanggal');
+                    if (tglInput) tglInput.value = sekolah.tanggalSurat;
+                }
                 updateHeader();
             }
         };

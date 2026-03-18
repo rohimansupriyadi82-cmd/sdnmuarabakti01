@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useReactToPrint } from "react-to-print";
 import { getStore } from "@/lib/store";
 import { KopSekolah, TandaTanganKepala } from "@/components/print/KopSekolah";
@@ -8,14 +8,29 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Printer } from "lucide-react";
+import JsBarcode from "jsbarcode";
 
 export default function SuratKeteranganNISN() {
   const store = getStore();
   const [selectedSiswa, setSelectedSiswa] = useState(store.siswaList[0]?.id || "");
   const printRef = useRef<HTMLDivElement>(null);
+  const barcodeRef = useRef<SVGSVGElement>(null);
   const handlePrint = useReactToPrint({ contentRef: printRef });
 
   const siswa = store.siswaList.find(s => s.id === selectedSiswa);
+
+  useEffect(() => {
+    if (siswa && barcodeRef.current) {
+      JsBarcode(barcodeRef.current, siswa.nisn || siswa.nama, {
+        format: "CODE128",
+        width: 1.5,
+        height: 40,
+        displayValue: true,
+        fontSize: 10,
+        margin: 0
+      });
+    }
+  }, [siswa]);
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -81,7 +96,12 @@ export default function SuratKeteranganNISN() {
                 mengikuti seleksi Penerimaan Peserta Didik Baru (PPDB) pada sekolah lanjutan
               </p>
 
-              <TandaTanganKepala tanggal={store.sekolah.tglSuratNISN} />
+              <div className="flex justify-between items-end mt-12">
+                <div className="barcode-container">
+                  <svg ref={barcodeRef}></svg>
+                </div>
+                <TandaTanganKepala tanggal={store.sekolah.tglSuratNISN} />
+              </div>
             </div>
           </CardContent>
         </Card>

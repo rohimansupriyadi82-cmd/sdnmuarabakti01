@@ -549,6 +549,10 @@
                 const sekolah = JSON.parse(rawSekolah);
                 if (sekolah.namaSekolah) document.getElementById('lembaga').value = sekolah.namaSekolah;
                 if (sekolah.kepalaSekolah) document.getElementById('kepala').value = sekolah.kepalaSekolah;
+                if (sekolah.tanggalSurat) {
+                    const tglInput = document.getElementById('inTgl');
+                    if (tglInput) tglInput.value = sekolah.tanggalSurat;
+                }
                 generateTable();
             }
         };

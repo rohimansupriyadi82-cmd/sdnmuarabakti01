@@ -238,6 +238,14 @@
                 const inSekolah = document.getElementById('inSekolah');
                 if (inSekolah) inSekolah.value = sekolah.namaSekolah;
             }
+            if (sekolah.tanggalSurat) {
+                const inTglCetak = document.getElementById('inTglCetak');
+                if (inTglCetak) inTglCetak.value = sekolah.tanggalSurat;
+            }
+            if (sekolah.kota) {
+                const inKota = document.getElementById('inKota');
+                if (inKota) inKota.value = sekolah.kota;
+            }
         }
 
         if (raw) {
