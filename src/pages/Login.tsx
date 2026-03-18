@@ -28,44 +28,60 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-sm shadow-elegant">
-        <CardHeader className="text-center pb-2">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-primary mb-4">
-            <GraduationCap className="h-7 w-7 text-primary-foreground" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cyan-100 via-blue-50 to-purple-100 p-4">
+      <Card className="w-full max-w-sm border-none shadow-[0_20px_50px_rgba(8,_112,_184,_0.1)] rounded-[2.5rem] bg-white/80 backdrop-blur-sm">
+        <CardHeader className="text-center pb-2 pt-8">
+          <div className="mx-auto mb-6 relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+            <img 
+              src="/admin.png" 
+              alt="Profile" 
+              className="relative h-20 w-20 rounded-full border-4 border-white shadow-xl object-cover"
+            />
           </div>
-          <h1 className="text-heading font-bold text-foreground">Aplikasi Olah Nilai</h1>
-          <p className="text-sm text-muted-foreground">Tahun Pelajaran 2025/2026</p>
+          <h1 className="text-2xl font-black tracking-tight text-slate-800 mb-1">
+            Aplikasi Administrasi Sekolah
+          </h1>
+          <p className="text-sm font-medium text-slate-500 uppercase tracking-widest">
+            Tahun Pelajaran 2025/2026
+          </p>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <CardContent className="px-8 pb-10">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username" className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Username</Label>
               <Input
                 id="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Masukkan username"
-                className="h-9"
+                className="h-12 rounded-2xl border-slate-200 focus:border-cyan-400 focus:ring-cyan-400 transition-all bg-white/50"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Password</Label>
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Masukkan password"
-                className="h-9"
+                className="h-12 rounded-2xl border-slate-200 focus:border-cyan-400 focus:ring-cyan-400 transition-all bg-white/50"
               />
             </div>
-            <Button type="submit" className="w-full h-9" disabled={loading}>
+            <Button 
+              type="submit" 
+              className="w-full h-12 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold shadow-lg shadow-cyan-200 transition-all duration-300 transform hover:-translate-y-1 active:scale-95" 
+              disabled={loading}
+            >
               {loading ? "Memproses..." : "Masuk"}
             </Button>
-            <p className="text-xs text-center text-muted-foreground">
-              Default: admin / admin
-            </p>
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+                Default Access: admin / admin
+              </p>
+              <div className="h-1 w-8 bg-slate-100 rounded-full"></div>
+            </div>
           </form>
         </CardContent>
       </Card>
