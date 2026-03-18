@@ -106,6 +106,7 @@ function CollapsibleGroup({ label, icon: Icon, items, collapsed }: CollapsibleGr
                       <NavLink
                         to={item.url}
                         className="w-full flex items-center hover:bg-sidebar-accent/10 transition-colors duration-200 rounded-md px-2 py-1.5"
+                        activeClassName="text-sidebar-foreground bg-sidebar-accent/10 font-medium"
                       >
                         {item.icon && <item.icon className="mr-2 h-4 w-4" />}
                         {!collapsed && <span className="text-sm">{item.title}</span>}
@@ -150,6 +151,7 @@ export function AppSidebar() {
                   <NavLink
                     to="/dashboard"
                     className="w-full flex items-center hover:bg-sidebar-accent/10 transition-colors duration-200 rounded-md px-2 py-1.5"
+                    activeClassName="text-sidebar-foreground bg-sidebar-accent/10 font-medium"
                   >
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     {!collapsed && <span>Dashboard</span>}
