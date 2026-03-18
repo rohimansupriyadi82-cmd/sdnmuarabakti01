@@ -17,7 +17,7 @@ const administrasiGuruKelasItems = [
   { title: "Cetak Kartu Ujian", url: "/print/kartu-ujian", icon: Printer },
   { title: "Generate Nomor Meja", url: "/generate/nomor-meja", icon: Users },
   { title: "Data Murid & NISN", url: "/data-siswa", icon: Users },
-  { title: "Olah Nilai & Raport", url: "/nilai/7", icon: BookOpen },
+  { title: "Olah Nilai & Raport.", url: "/nilai/7", icon: BookOpen },
 ];
 
 const dataMasterItems = [
