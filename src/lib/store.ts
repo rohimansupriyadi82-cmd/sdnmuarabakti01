@@ -40,6 +40,9 @@ export interface DataSekolah {
   mapelMuloInggris: boolean;
   mapelMuloKomputer: boolean;
   nomorSurat: string;
+  noSuratLulus: string;
+  noSuratKelakuanBaik: string;
+  noSuratNISN: string;
   tanggalSurat: string;
   kota: string;
 }
@@ -169,6 +172,9 @@ const defaultSekolah: DataSekolah = {
   mapelMuloInggris: true,
   mapelMuloKomputer: true,
   nomorSurat: '421.2/001/SDNMB01/III/2026',
+  noSuratLulus: '400.3.12.1/041/SD.37/VI/2025',
+  noSuratKelakuanBaik: '400.3.12.1/042/SD.37/VI/2025',
+  noSuratNISN: '400.3.12.1/043/SD.37/VI/2025',
   tanggalSurat: new Date().toISOString().split('T')[0],
   kota: 'Bekasi',
 };

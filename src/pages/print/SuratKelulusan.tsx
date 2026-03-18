@@ -66,7 +66,7 @@ export default function SuratKelulusan() {
             >
               <KopSekolah
                 judulSurat="SURAT KETERANGAN KELULUSAN KELAS VI"
-                nomorSurat="400.3.11.1/039/SD.37/VI/2025"
+                nomorSurat={store.sekolah.noSuratLulus}
               />
 
               <p className="text-justify mb-4 indent-8">

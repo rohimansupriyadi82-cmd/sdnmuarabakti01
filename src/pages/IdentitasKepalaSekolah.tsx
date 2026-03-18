@@ -95,7 +95,37 @@ export default function IdentitasKepalaSekolah() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t">
             <div className="space-y-1">
-              <Label htmlFor="nomorSurat" className="text-sm">Nomor Surat Sekolah</Label>
+              <Label htmlFor="noSuratLulus" className="text-sm">Nomor Surat Lulus & Amplop</Label>
+              <Input
+                id="noSuratLulus"
+                value={form.noSuratLulus}
+                onChange={(e) => handleChange("noSuratLulus", e.target.value)}
+                placeholder="Contoh: 400.3.12.1/041/SD.37/VI/2025"
+                className="h-9 mt-1"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="noSuratKelakuanBaik" className="text-sm">Nomor Surat Kelakuan Baik</Label>
+              <Input
+                id="noSuratKelakuanBaik"
+                value={form.noSuratKelakuanBaik}
+                onChange={(e) => handleChange("noSuratKelakuanBaik", e.target.value)}
+                placeholder="Contoh: 400.3.12.1/042/SD.37/VI/2025"
+                className="h-9 mt-1"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="noSuratNISN" className="text-sm">Nomor Surat Keterangan NISN</Label>
+              <Input
+                id="noSuratNISN"
+                value={form.noSuratNISN}
+                onChange={(e) => handleChange("noSuratNISN", e.target.value)}
+                placeholder="Contoh: 400.3.12.1/043/SD.37/VI/2025"
+                className="h-9 mt-1"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="nomorSurat" className="text-sm">Nomor Surat Lainnya</Label>
               <Input
                 id="nomorSurat"
                 value={form.nomorSurat}

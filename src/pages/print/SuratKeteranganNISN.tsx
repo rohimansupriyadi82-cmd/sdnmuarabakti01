@@ -61,7 +61,7 @@ export default function SuratKeteranganNISN() {
             >
               <KopSekolah
                 judulSurat="SURAT KETERANGAN NISN"
-                nomorSurat="400.3.12.1/041/SD.37/VI/2025"
+                nomorSurat={store.sekolah.noSuratNISN}
               />
 
               <p className="text-justify indent-8 mb-6">

@@ -127,7 +127,7 @@ export default function AmplopKelulusan() {
                 <div style={{ display: "flex" }}>
                   <span style={{ width: "18mm" }}>Nomor</span>
                   <span style={{ width: "4mm" }}>:</span>
-                  <span style={{ flex: 1 }} />
+                  <span style={{ flex: 1 }}>{s.noSuratLulus}</span>
                 </div>
                 <div style={{ display: "flex" }}>
                   <span style={{ width: "18mm" }}>Hal</span>

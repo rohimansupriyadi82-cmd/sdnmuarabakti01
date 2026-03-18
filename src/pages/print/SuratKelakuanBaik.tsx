@@ -61,7 +61,7 @@ export default function SuratKelakuanBaik() {
             >
               <KopSekolah
                 judulSurat="SURAT KETERANGAN KELAKUAN BAIK"
-                nomorSurat="400.3.12.1/040/SD.37/VI/2025"
+                nomorSurat={store.sekolah.noSuratKelakuanBaik}
               />
 
               <p className="text-justify indent-8 mb-6">
