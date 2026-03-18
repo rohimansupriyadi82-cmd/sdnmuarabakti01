@@ -20,6 +20,8 @@ import {
 import { exportNilaiToExcel } from "@/lib/exportExcel";
 import { toast } from "sonner";
 import logoBekasi from "@/assets/logo-bekasi.png";
+import { backupData, restoreData } from "@/lib/backupRestore";
+import { useRef } from "react";
 
 const administrasiGuruKelasItems = [
   { title: "Cetak Kartu Ujian", url: "/aplikasi_kartu_ujian.V2.html", icon: CreditCard },
@@ -139,6 +141,18 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleRestoreClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      restoreData(file);
+    }
+  };
 
   return (
     <Sidebar collapsible="icon" className="border-r-0">
@@ -188,6 +202,32 @@ export function AppSidebar() {
 
       <SidebarFooter className="p-3 border-t border-sidebar-border">
         <SidebarMenu>
+          {!collapsed && (
+            <div className="space-y-2 mb-2 px-1">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept=".json"
+                className="hidden"
+              />
+              <button
+                onClick={backupData}
+                className="w-full flex items-center gap-2 px-3 py-2 text-[11px] font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors shadow-sm"
+              >
+                <Download className="h-3.5 w-3.5" />
+                💾 Backup Data Utama
+              </button>
+              <button
+                onClick={handleRestoreClick}
+                className="w-full flex items-center gap-2 px-3 py-2 text-[11px] font-bold text-white bg-orange-500 hover:bg-orange-600 rounded-lg transition-colors shadow-sm"
+              >
+                <Download className="h-3.5 w-3.5 rotate-180" />
+                📂 Restore Data Utama
+              </button>
+            </div>
+          )}
+          
           {!collapsed && (
             <div className="px-2 pb-2 text-[11px] leading-snug text-sidebar-foreground/40 text-left">
               Hak Cipta © Rohiman Supriyadi
