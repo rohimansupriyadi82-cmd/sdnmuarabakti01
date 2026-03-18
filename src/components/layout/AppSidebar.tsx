@@ -17,6 +17,9 @@ import {
   Collapsible, CollapsibleContent, CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
+import { exportNilaiToExcel } from "@/lib/exportExcel";
+import { toast } from "sonner";
+
 const administrasiGuruKelasItems = [
   { title: "Cetak Kartu Ujian", url: "/print/kartu-ujian", icon: Printer },
   { title: "Generate Nomor Meja", url: "/generate/nomor-meja", icon: Users },
@@ -54,9 +57,6 @@ const pengaturanItems = [
   { title: "Identitas Kepala Sekolah", url: "/identitas-kepala-sekolah", icon: Users },
   { title: "Pengaturan Bobot", url: "/pengaturan-bobot", icon: Settings },
 ];
-
-import { exportNilaiToExcel } from "@/lib/exportExcel";
-import { toast } from "sonner";
 
 interface CollapsibleGroupProps {
   label: string;
@@ -100,17 +100,15 @@ function CollapsibleGroup({ label, icon: Icon, items, collapsed }: CollapsibleGr
                         className="w-full flex items-center hover:bg-sidebar-accent/10 transition-colors duration-200 rounded-md text-left px-2 py-1.5"
                       >
                         {item.icon && <item.icon className="mr-2 h-4 w-4" />}
-                        {!collapsed && <span className="text-data">{item.title}</span>}
+                        {!collapsed && <span className="text-data text-sm">{item.title}</span>}
                       </button>
                     ) : (
                       <NavLink
                         to={item.url}
-                        className={({ isActive }) => 
-                          `w-full flex items-center hover:bg-sidebar-accent/10 transition-colors duration-200 rounded-md px-2 py-1.5 ${isActive ? "text-sidebar-foreground bg-sidebar-accent/10 font-medium" : ""}`
-                        }
+                        className="w-full flex items-center hover:bg-sidebar-accent/10 transition-colors duration-200 rounded-md px-2 py-1.5"
                       >
                         {item.icon && <item.icon className="mr-2 h-4 w-4" />}
-                        {!collapsed && <span className="text-data">{item.title}</span>}
+                        {!collapsed && <span className="text-data text-sm">{item.title}</span>}
                       </NavLink>
                     )}
                   </SidebarMenuButton>
@@ -151,9 +149,7 @@ export function AppSidebar() {
                 <SidebarMenuButton asChild>
                   <NavLink
                     to="/dashboard"
-                    className={({ isActive }) => 
-                      `w-full flex items-center hover:bg-sidebar-accent/10 transition-colors duration-200 rounded-md px-2 py-1.5 ${isActive ? "text-sidebar-foreground bg-sidebar-accent/10 font-medium" : ""}`
-                    }
+                    className="w-full flex items-center hover:bg-sidebar-accent/10 transition-colors duration-200 rounded-md px-2 py-1.5"
                   >
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     {!collapsed && <span>Dashboard</span>}
