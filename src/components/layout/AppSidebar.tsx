@@ -79,7 +79,7 @@ function CollapsibleGroup({ label, icon: Icon, items, collapsed }: CollapsibleGr
   return (
     <Collapsible defaultOpen={isActive}>
       <SidebarGroup>
-        <CollapsibleTrigger className="w-full">
+        <CollapsibleTrigger className="w-full text-left">
           <SidebarGroupLabel className="flex items-center justify-between text-sidebar-foreground/60 hover:text-sidebar-foreground/80 transition-colors cursor-pointer">
             <span className="flex items-center gap-2">
               <Icon className="h-4 w-4" />
@@ -100,7 +100,7 @@ function CollapsibleGroup({ label, icon: Icon, items, collapsed }: CollapsibleGr
                         className="w-full flex items-center hover:bg-sidebar-accent/10 transition-colors duration-200 rounded-md text-left px-2 py-1.5"
                       >
                         {item.icon && <item.icon className="mr-2 h-4 w-4" />}
-                        {!collapsed && <span className="text-data text-sm">{item.title}</span>}
+                        {!collapsed && <span className="text-sm">{item.title}</span>}
                       </button>
                     ) : (
                       <NavLink
@@ -108,7 +108,7 @@ function CollapsibleGroup({ label, icon: Icon, items, collapsed }: CollapsibleGr
                         className="w-full flex items-center hover:bg-sidebar-accent/10 transition-colors duration-200 rounded-md px-2 py-1.5"
                       >
                         {item.icon && <item.icon className="mr-2 h-4 w-4" />}
-                        {!collapsed && <span className="text-data text-sm">{item.title}</span>}
+                        {!collapsed && <span className="text-sm">{item.title}</span>}
                       </NavLink>
                     )}
                   </SidebarMenuButton>
@@ -133,7 +133,7 @@ export function AppSidebar() {
         <div className="flex items-center gap-3">
           <img src="/src/assets/logo-bekasi.png" alt="Logo" className="h-12 w-12" />
           {!collapsed && (
-            <div className="flex flex-col">
+            <div className="flex flex-col text-left">
               <span className="text-sm font-semibold text-sidebar-foreground/90">Aplikasi Olah Nilai</span>
               <span className="text-xs text-sidebar-foreground/50">Tahun Pelajaran 2025/2026</span>
             </div>
@@ -161,10 +161,8 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarSeparator />
-
         <CollapsibleGroup label="ADMINISTRASI GURU KELAS" icon={Users} items={administrasiGuruKelasItems} collapsed={collapsed} />
         <SidebarSeparator />
-
         <CollapsibleGroup label="DATA MASTER" icon={FileText} items={dataMasterItems} collapsed={collapsed} />
         <SidebarSeparator />
         <CollapsibleGroup label="INPUT NILAI" icon={BookOpen} items={inputNilaiItems} collapsed={collapsed} />
@@ -177,7 +175,7 @@ export function AppSidebar() {
       <SidebarFooter className="p-3 border-t border-sidebar-border">
         <SidebarMenu>
           {!collapsed && (
-            <div className="px-2 pb-2 text-[11px] leading-snug text-sidebar-foreground/40">
+            <div className="px-2 pb-2 text-[11px] leading-snug text-sidebar-foreground/40 text-left">
               Hak Cipta © Rohiman Supriyadi
             </div>
           )}
