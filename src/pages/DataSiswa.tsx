@@ -141,7 +141,7 @@ export default function DataSiswa() {
       id: "actions",
       header: "Aksi",
       cell: ({ row }) => (
-        <div className="flex gap-1">
+        <div className="flex items-center" style={{ gap: '10px' }}>
           <Button
             variant="ghost"
             size="sm"
@@ -163,22 +163,20 @@ export default function DataSiswa() {
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 w-7 px-1"
+            className="h-7 w-auto p-1 flex items-center"
             onClick={() => navigate(`/print/transkrip/${row.original.id}`)}
             title="Cetak Transkrip"
           >
-            <Printer className="h-3.5 w-3.5 mr-1" />
-            <span className="text-[10px] font-medium">Cetak Transkrip</span>
+            <Printer className="h-3.5 w-3.5" />
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 w-7 px-1"
+            className="h-7 w-auto p-1 flex items-center"
             onClick={() => navigate(`/print/amplop-kelulusan/${row.original.id}`)}
             title="Cetak Amplop Kelulusan"
           >
-            <Printer className="h-3.5 w-3.5 mr-1" />
-            <span className="text-[10px] font-medium">Cetak Amplop</span>
+            <Printer className="h-3.5 w-3.5" />
           </Button>
         </div>
       ),

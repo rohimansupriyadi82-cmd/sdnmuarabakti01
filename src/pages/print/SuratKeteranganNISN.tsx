@@ -79,36 +79,33 @@ export default function SuratKeteranganNISN() {
                 background: "white",
               }}
             >
-              <KopSekolah
-                judulSurat={
-                  <div className="text-center">
-                    <span className="font-bold underline text-[14pt]">SURAT KETERANGAN NISN</span>
-                    <div className="font-normal text-[12pt] mt-1">Nomor : {store.sekolah.noSuratNISN}</div>
-                  </div>
-                }
-                hideDefaultJudul
-              />
+              <div className="text-center">
+                <h3 className="text-[14pt] font-bold underline">SURAT KETERANGAN NISN</h3>
+                <p className="text-[12pt]">Nomor : {store.sekolah.noSuratNISN}</p>
+              </div>
 
               <p className="text-justify mb-6 mt-8">
                 Yang bertandatangan dibawah ini Kepala SDN MUARA BAKTI 01 menerangkan bahwa :
               </p>
 
-              <div className="space-y-1 mb-6 ml-4 text-[12pt]">
-                <div className="flex"><span className="w-56">Nama</span><span className="w-4">:</span><span className="font-bold uppercase">{siswa.nama}</span></div>
-                <div className="flex"><span className="w-56">Tempat dan Tanggal Lahir</span><span className="w-4">:</span><span>{siswa.tempatLahir}, {siswa.tanggalLahir}</span></div>
-                <div className="flex"><span className="w-56">Jenis Kelamin</span><span className="w-4">:</span><span>{siswa.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</span></div>
-                <div className="flex"><span className="w-56">Nomor Induk Siswa</span><span className="w-4">:</span><span>{siswa.nis}</span></div>
-                <div className="flex"><span className="w-56">NISN</span><span className="w-4">:</span><span className="font-bold">{siswa.nisn}</span></div>
-                <div className="flex"><span className="w-56">Asal Sekolah</span><span className="w-4">:</span><span>SDN MUARA BAKTI 01</span></div>
-                <div className="flex"><span className="w-56">Nama Orang Tua/Wali</span><span className="w-4">:</span><span>{siswa.namaOrtuIjazah || siswa.namaAyah}</span></div>
-                <div className="flex"><span className="w-56">Alamat</span><span className="w-4">:</span><span>{siswa.alamat}</span></div>
-              </div>
+              <table className="mb-6 ml-4 text-[12pt]" style={{ borderSpacing: '0 4px' }}>
+                <tbody>
+                  <tr><td className="w-56">Nama</td><td className="w-4">:</td><td className="font-bold uppercase">{siswa.nama}</td></tr>
+                  <tr><td>Tempat dan Tanggal Lahir</td><td>:</td><td>{siswa.tempatLahir}, {siswa.tanggalLahir}</td></tr>
+                  <tr><td>Jenis Kelamin</td><td>:</td><td>{siswa.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</td></tr>
+                  <tr><td>Nomor Induk Siswa</td><td>:</td><td>{siswa.nis}</td></tr>
+                  <tr><td>NISN</td><td>:</td><td className="font-bold">{siswa.nisn}</td></tr>
+                  <tr><td>Asal Sekolah</td><td>:</td><td>SDN MUARA BAKTI 01</td></tr>
+                  <tr><td>Nama Orang Tua/Wali</td><td>:</td><td>{siswa.namaOrtuIjazah || siswa.namaAyah}</td></tr>
+                  <tr><td>Alamat</td><td>:</td><td>{siswa.alamat}</td></tr>
+                </tbody>
+              </table>
 
               <p className="text-justify indent-12 mb-6">
                 Adalah benar nama tersebut di atas berasal dari SDN MUARA BAKTI 01 Tahun Pelajaran 2024/2025 dan berdasarkan catatan pada kami, peserta didik tersebut telah mempunyai Nomor Induk Siswa Nasional (NISN) hasil Verfikasi dan Validasi (VERVAL PD) di PDSP yaitu :
               </p>
 
-              <div className="my-8 py-6 px-8 bg-[#e3f2fd] text-center rounded-none border border-blue-200">
+              <div className="my-8 py-6 px-8 text-center rounded-none" style={{ backgroundColor: '#e3f2fd', border: '1px solid #2196f3' }}>
                 <span className="text-5xl font-bold text-black">{siswa.nisn}</span>
               </div>
 
@@ -116,7 +113,7 @@ export default function SuratKeteranganNISN() {
                 Demikian surat keterangan ini dibuat untuk dipergunakan sebagai bahan persyaratan mengikuti seleksi Penerimaan Peserta Didik Baru (PPDB) pada sekolah lanjutan
               </p>
 
-              <div className="flex justify-between items-end mt-16 px-4">
+              <div className="flex justify-between items-end mt-16">
                 <div className="barcode-container">
                   <svg ref={barcodeRef}></svg>
                 </div>
