@@ -53,7 +53,7 @@ export default function DaftarKendaliIjazah() {
           >
             <div style={{ textAlign: "center", fontWeight: 700, fontSize: "10pt", marginBottom: "4mm" }}>
               <div>DAFTAR KENDALI IJAZAH SEKOLAH DASAR (SD)</div>
-              <div>TAHUN PELAJARAN 2024/2025</div>
+              <div>TAHUN PELAJARAN {store.sekolah.tahunPelajaran}</div>
             </div>
 
             <div style={{ display: "flex", justifyContent: "flex-start", gap: "18mm", fontSize: "9pt", marginBottom: "3mm" }}>
@@ -144,4 +144,3 @@ export default function DaftarKendaliIjazah() {
     </div>
   );
 }
-

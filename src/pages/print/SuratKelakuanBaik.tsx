@@ -87,7 +87,7 @@ export default function SuratKelakuanBaik() {
 
               <p className="text-justify indent-8 mb-4">
                 Adalah benar nama tersebut di atas berasal dari {store.sekolah.namaSekolah} Tahun
-                Pelajaran 2024/2025 Berdasarkan catatan pada kami, selama menjadi siswa di {store.sekolah.namaSekolah},
+                Pelajaran {store.sekolah.tahunPelajaran} Berdasarkan catatan pada kami, selama menjadi siswa di {store.sekolah.namaSekolah},
                 Dinas Pendidikan Kab. {store.sekolah.kabupaten}, Peserta didik tersebut berkelakuan baik dan tidak
                 mencemarkan nama baik sekolah serta tidak terlibat pada penyalahgunaan Narkotika, Alkohol,
                 Psikotrapika, dan Zat Aditif lainnya (NAPZA) yang dapat merusak moral dan kesehatan.

@@ -190,7 +190,7 @@ export default function SuratKeteranganNISN() {
 
               <p className="text-justify indent-12 mb-6">
                 Adalah benar nama tersebut di atas berasal dari SDN MUARA BAKTI
-                01 Tahun Pelajaran 2024/2025 dan berdasarkan catatan pada kami,
+                01 Tahun Pelajaran {store.sekolah.tahunPelajaran} dan berdasarkan catatan pada kami,
                 peserta didik tersebut telah mempunyai Nomor Induk Siswa
                 Nasional (NISN) hasil Verfikasi dan Validasi (VERVAL PD) di PDSP
                 yaitu :

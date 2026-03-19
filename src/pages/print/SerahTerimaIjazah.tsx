@@ -54,7 +54,7 @@ export default function SerahTerimaIjazah() {
             <div style={{ textAlign: "center", fontWeight: 700, fontSize: "10pt", marginBottom: "4mm" }}>
               <div style={{ letterSpacing: "0.2px" }}>TANDA SERAH TERIMA IJAZAH SDN MUARA BAKTI 01</div>
               <div>KECAMATAN BABELAN</div>
-              <div>TAHUN PELAJARAN 2024/2025</div>
+              <div>TAHUN PELAJARAN {store.sekolah.tahunPelajaran}</div>
             </div>
 
             <table className="w-full border-collapse text-[9pt]" style={{ border: "1px solid black" }}>
@@ -122,4 +122,3 @@ export default function SerahTerimaIjazah() {
     </div>
   );
 }
-
