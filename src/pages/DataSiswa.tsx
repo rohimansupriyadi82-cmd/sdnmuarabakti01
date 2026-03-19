@@ -241,7 +241,14 @@ export default function DataSiswa() {
         const nisn = getValue(row, ["nisn"]);
         const nis = getValue(row, ["nis", "no induk"]);
         const nomorPeserta = getValue(row, ["nomor peserta", "no peserta"]);
-        const jkRaw = getValue(row, ["jenis kelamin lp", "jenis kelamin l/p", "jenis kelamin", "l/p", "kelamin"]);
+        const jkRaw = getValue(row, [
+          "jk",
+          "jenis kelamin lp",
+          "jenis kelamin l/p",
+          "jenis kelamin",
+          "l/p",
+          "kelamin",
+        ]);
         const tempatLahir = getValue(row, ["tempat lahir"]);
         const tanggalLahir = normalizeTanggalLahir(getValue(row, ["tanggal lahir", "tgl lahir"]));
         const namaAyah = getValue(row, ["nama ayah", "ayah"]);
@@ -277,15 +284,88 @@ export default function DataSiswa() {
         return;
       }
 
+      let addedCount = 0;
+      let updatedCount = 0;
+      let skippedCount = 0;
+
       setSiswaList((prev) => {
-        const total = prev.length + newStudents.length;
-        if (total > 500) {
-          toast.error(`Kapasitas melebihi 500 (${total} siswa)`);
-          return prev;
+        const next = [...prev];
+        const indexByNisn = new Map<string, number>();
+        const indexByNama = new Map<string, number>();
+
+        for (let i = 0; i < next.length; i++) {
+          const n = (next[i].nisn || "").trim();
+          if (n) indexByNisn.set(n, i);
+          const nameKey = (next[i].nama || "").trim().toLowerCase();
+          if (nameKey) indexByNama.set(nameKey, i);
         }
-        return [...prev, ...newStudents];
+
+        const mergeNonEmpty = (existing: Siswa, incoming: Siswa): Siswa => {
+          const out: Siswa = { ...existing };
+          const assignIf = <K extends keyof Siswa>(key: K) => {
+            const v = incoming[key];
+            if (typeof v === "string") {
+              if (v.trim() !== "") out[key] = v as Siswa[K];
+              return;
+            }
+            if (v !== undefined) out[key] = v as Siswa[K];
+          };
+
+          assignIf("nomorPeserta");
+          assignIf("nisn");
+          assignIf("nis");
+          assignIf("nama");
+          assignIf("jenisKelamin");
+          assignIf("tempatLahir");
+          assignIf("tanggalLahir");
+          assignIf("namaAyah");
+          assignIf("namaIbu");
+          assignIf("noSeriIjazah");
+          assignIf("namaOrtuIjazah");
+          return out;
+        };
+
+        for (let i = 0; i < newStudents.length; i++) {
+          const incoming = newStudents[i];
+          const nisnKey = (incoming.nisn || "").trim();
+          const namaKey = (incoming.nama || "").trim().toLowerCase();
+
+          const existingIndex =
+            (nisnKey && indexByNisn.get(nisnKey) !== undefined)
+              ? indexByNisn.get(nisnKey)
+              : (namaKey && indexByNama.get(namaKey) !== undefined)
+                ? indexByNama.get(namaKey)
+                : undefined;
+
+          if (existingIndex !== undefined) {
+            const existing = next[existingIndex];
+            next[existingIndex] = mergeNonEmpty(existing, incoming);
+            updatedCount++;
+            continue;
+          }
+
+          if (next.length >= 500) {
+            skippedCount++;
+            continue;
+          }
+
+          const id = `s${Date.now()}-${i + 1}`;
+          next.push({ ...incoming, id });
+          addedCount++;
+
+          if (nisnKey) indexByNisn.set(nisnKey, next.length - 1);
+          if (namaKey) indexByNama.set(namaKey, next.length - 1);
+        }
+
+        return next;
       });
-      toast.success(`${newStudents.length} peserta didik berhasil diimpor`);
+
+      const parts: string[] = [];
+      if (addedCount) parts.push(`${addedCount} ditambahkan`);
+      if (updatedCount) parts.push(`${updatedCount} diperbarui`);
+      if (skippedCount) parts.push(`${skippedCount} dilewati`);
+
+      toast.success(`Impor selesai: ${parts.join(", ") || "0 perubahan"}`);
     };
     reader.readAsText(file);
     if (fileInputRef.current) fileInputRef.current.value = "";
