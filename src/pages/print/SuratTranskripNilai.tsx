@@ -207,16 +207,28 @@ export default function SuratTranskripNilai() {
                         : ""}
                     </td>
                   </tr>
-                  {/* Muatan Lokal b. Bahasa Inggris */}
+                  {/* Muatan Lokal c. Komputer */}
                   <tr>
                     <td className="border border-foreground/40 p-1.5 text-center tabular-nums" />
                     <td className="border border-foreground/40 p-1.5 pl-8">
-                      b. {MATA_PELAJARAN_FULL["Inggris"] || "Bahasa Inggris"}
+                      c. {MATA_PELAJARAN_FULL["Komputer"] || "Komputer"}
                     </td>
                     <td className="border border-foreground/40 p-1.5 text-center tabular-nums">
-                      {nilaiIjazah["Inggris"]
-                        ? nilaiIjazah["Inggris"].toFixed(2).replace(".", ",")
-                        : ""}
+                      {nilaiIjazah["Komputer"]
+                        ? nilaiIjazah["Komputer"].toFixed(2).replace(".", ",")
+                        : "-"}
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td
+                      colSpan={2}
+                      className="border border-foreground/40 p-1.5 text-center font-bold"
+                    >
+                      Jumlah Nilai
+                    </td>
+                    <td className="border border-foreground/40 p-1.5 text-center tabular-nums font-bold">
+                      {jumlah.toFixed(2).replace(".", ",")}
                     </td>
                   </tr>
 
