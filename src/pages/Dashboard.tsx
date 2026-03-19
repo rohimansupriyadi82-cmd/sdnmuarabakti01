@@ -21,8 +21,7 @@ export default function Dashboard() {
     <div className="space-y-6 animate-fade-in">
       <div>
         <h2 className="text-heading font-bold text-foreground">Aplikasi Olah Nilai</h2>
-        <p className="text-sm text-muted-foreground mt-1">Kecamatan Babelan Kab. Bekasi</p>
-        <p className="text-xs text-muted-foreground mt-1">Tahun Pelajaran 2025/2026</p>
+        <p className="text-sm text-muted-foreground mt-1">Kec. Babelan Kab. Bekasi</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

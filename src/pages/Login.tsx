@@ -46,7 +46,7 @@ export default function Login() {
             Aplikasi Administrasi Sekolah
           </h1>
           <p className="text-sm font-medium text-slate-500 uppercase tracking-widest">
-            Tahun Pelajaran 2025/2026
+            Kec. Babelan Kab. Bekasi
           </p>
         </CardHeader>
         <CardContent className="px-8 pb-10">

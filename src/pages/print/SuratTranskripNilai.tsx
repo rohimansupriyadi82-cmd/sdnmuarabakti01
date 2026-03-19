@@ -204,7 +204,19 @@ export default function SuratTranskripNilai() {
                     <td className="border border-foreground/40 p-1.5 text-center tabular-nums">
                       {nilaiIjazah["Bahasa Sunda"]
                         ? nilaiIjazah["Bahasa Sunda"].toFixed(2).replace(".", ",")
-                        : ""}
+                        : "-"}
+                    </td>
+                  </tr>
+                  {/* Muatan Lokal b. Bahasa Inggris */}
+                  <tr>
+                    <td className="border border-foreground/40 p-1.5 text-center tabular-nums" />
+                    <td className="border border-foreground/40 p-1.5 pl-8">
+                      b. {MATA_PELAJARAN_FULL["Inggris"] || "Bahasa Inggris"}
+                    </td>
+                    <td className="border border-foreground/40 p-1.5 text-center tabular-nums">
+                      {nilaiIjazah["Inggris"]
+                        ? nilaiIjazah["Inggris"].toFixed(2).replace(".", ",")
+                        : "-"}
                     </td>
                   </tr>
                   {/* Muatan Lokal c. Komputer */}
