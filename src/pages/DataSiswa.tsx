@@ -141,7 +141,7 @@ export default function DataSiswa() {
       id: "actions",
       header: "Aksi",
       cell: ({ row }) => (
-        <div className="flex items-center" style={{ gap: '10px' }}>
+        <div className="flex items-center gap-[10px]">
           <Button
             variant="ghost"
             size="sm"

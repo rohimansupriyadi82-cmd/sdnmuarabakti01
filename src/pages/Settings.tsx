@@ -59,11 +59,13 @@ export default function Settings() {
 
   const handleResetData = () => {
     if (window.confirm("⚠️ APAKAH ANDA YAKIN? Semua data (siswa, nilai, pengaturan) akan dihapus permanen. Pastikan Anda sudah melakukan Backup.")) {
-      localStorage.clear();
-      toast.success("Seluruh data berhasil dihapus. Mereset aplikasi...");
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 1500);
+      if (window.confirm("KONFIRMASI TERAKHIR: Anda benar-benar ingin menghapus seluruh data aplikasi? Tindakan ini tidak dapat dibatalkan.")) {
+        localStorage.clear();
+        toast.success("Seluruh data berhasil dihapus. Mereset aplikasi...");
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 1500);
+      }
     }
   };
 
