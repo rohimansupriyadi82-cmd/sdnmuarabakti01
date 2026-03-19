@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
-import { getStore, calculateNilaiIjazah, MATA_PELAJARAN, MATA_PELAJARAN_FULL, useSekolah } from "@/lib/store";
-import { KopSekolah, TandaTanganKepala } from "@/components/print/KopSekolah";
+import { getStore, calculateNilaiIjazah, MATA_PELAJARAN_FULL } from "@/lib/store";
+import { TandaTanganKepala } from "@/components/print/KopSekolah";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -13,10 +12,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Printer } from "lucide-react";
+import { LayoutDashboard, Printer } from "lucide-react";
 
 export default function SuratTranskripNilai() {
   const store = getStore();
+  const navigate = useNavigate();
   const params = useParams<{ siswaId?: string }>();
   const initialId = params.siswaId && store.siswaList.some(s => s.id === params.siswaId)
     ? params.siswaId
@@ -38,12 +38,29 @@ export default function SuratTranskripNilai() {
     [selectedSiswa],
   );
 
-  const nilaiArr = useMemo(
-    () => MATA_PELAJARAN.map(m => nilaiIjazah[m] || 0),
-    [nilaiIjazah],
-  );
-  const jumlah = nilaiArr.reduce((a, b) => a + b, 0);
-  const rataRata = nilaiArr.length > 0 ? jumlah / nilaiArr.length : 0;
+  const nilaiKurmer = useMemo(() => {
+    const get = (k: string) => (typeof nilaiIjazah[k] === "number" ? (nilaiIjazah[k] as number) : 0);
+    const ipa = get("IPA");
+    const ips = get("IPS");
+    const ipas = ipa || ips ? (ipa + ips) / (ipa && ips ? 2 : 1) : 0;
+
+    const rows = [
+      { no: 1, label: "Pendidikan Agama", value: get("Agama") },
+      { no: 2, label: "Pendidikan Pancasila", value: get("PKn") },
+      { no: 3, label: "Bahasa Indonesia", value: get("B Indo") },
+      { no: 4, label: "Matematika", value: get("MTK") },
+      { no: 5, label: "IPAS", value: ipas },
+      { no: 6, label: "Seni Budaya", value: get("SBdP") },
+      { no: 7, label: "PJOK", value: get("PJOK") },
+      { no: 8, label: "Bahasa Sunda", value: get("Bahasa Sunda") },
+      { no: 9, label: "Bahasa Inggris", value: get("Inggris") },
+      { no: 10, label: "Komputer", value: get("Komputer") },
+    ];
+
+    const total = rows.reduce((a, b) => a + (b.value || 0), 0);
+    const avg = rows.length > 0 ? total / rows.length : 0;
+    return { rows, total, avg };
+  }, [nilaiIjazah]);
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -91,28 +108,55 @@ export default function SuratTranskripNilai() {
                 lineHeight: 1.5,
               }}
             >
-              <KopSekolah judulSurat="SURAT TRANSKRIP NILAI" />
+              <div className="text-center border-b-[3px] border-black pb-2 mb-5">
+                <div className="text-[14pt] font-black uppercase leading-tight">
+                  SD NEGERI MUARA BAKTI
+                </div>
+                <div className="text-[11pt] leading-snug">
+                  Kecamatan {store.sekolah.kecamatan}, {store.sekolah.alamatSekolah}
+                </div>
+                <div className="text-[11pt] leading-snug">
+                  Email: {store.sekolah.email}
+                </div>
+              </div>
 
-              <div className="space-y-1 mb-4 text-[11pt]">
+              <div className="text-center mb-5">
+                <div className="text-[13pt] font-bold underline uppercase">SURAT TRANSKRIP NILAI</div>
+                <div className="text-[11pt] mt-1">Nomor: {store.sekolah.noSuratTranskrip}</div>
+              </div>
+
+              <div className="space-y-1 mb-5 text-[11pt]">
                 <div className="flex">
-                  <span className="w-44">Nama</span>
+                  <span className="w-56">Nama Peserta Didik</span>
                   <span className="w-4">:</span>
                   <span className="font-bold uppercase">{siswa.nama}</span>
                 </div>
                 <div className="flex">
-                  <span className="w-44">Nomor Peserta</span>
+                  <span className="w-56">Tempat dan Tanggal Lahir</span>
                   <span className="w-4">:</span>
-                  <span>{siswa.nomorPeserta}</span>
+                  <span>
+                    {siswa.tempatLahir}, {siswa.tanggalLahir}
+                  </span>
                 </div>
                 <div className="flex">
-                  <span className="w-44">NISN</span>
+                  <span className="w-56">Nama Orang Tua/Wali</span>
+                  <span className="w-4">:</span>
+                  <span className="uppercase">{siswa.namaOrtuIjazah || siswa.namaAyah}</span>
+                </div>
+                <div className="flex">
+                  <span className="w-56">Nomor Induk Siswa (NIS)</span>
+                  <span className="w-4">:</span>
+                  <span>{siswa.nis}</span>
+                </div>
+                <div className="flex">
+                  <span className="w-56">Nomor Induk Siswa Nasional (NISN)</span>
                   <span className="w-4">:</span>
                   <span>{siswa.nisn}</span>
                 </div>
                 <div className="flex">
-                  <span className="w-44">NIS</span>
+                  <span className="w-56">Nomor Peserta Ujian/Asesmen</span>
                   <span className="w-4">:</span>
-                  <span>{siswa.nis}</span>
+                  <span>{siswa.nomorPeserta}</span>
                 </div>
               </div>
 
@@ -131,106 +175,21 @@ export default function SuratTranskripNilai() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td
-                      colSpan={3}
-                      className="border border-foreground/40 p-1.5 font-bold bg-muted/40"
-                    >
-                      Kelompok A
-                    </td>
-                  </tr>
-                  {MATA_PELAJARAN.slice(0, 6).map((mapel, idx) => (
-                    <tr key={mapel}>
+                  {nilaiKurmer.rows.map((r) => (
+                    <tr key={r.no}>
                       <td className="border border-foreground/40 p-1.5 text-center tabular-nums">
-                        {idx + 1}
+                        {r.no}
                       </td>
                       <td className="border border-foreground/40 p-1.5">
-                        {MATA_PELAJARAN_FULL[mapel] || mapel}
+                        {r.label === "Seni Budaya"
+                          ? (MATA_PELAJARAN_FULL["SBdP"] || "Seni Budaya")
+                          : r.label}
                       </td>
                       <td className="border border-foreground/40 p-1.5 text-center tabular-nums">
-                        {nilaiIjazah[mapel] ? nilaiIjazah[mapel].toFixed(2).replace(".", ",") : ""}
+                        {r.value ? r.value.toFixed(2).replace(".", ",") : "-"}
                       </td>
                     </tr>
                   ))}
-
-                  <tr>
-                    <td
-                      colSpan={3}
-                      className="border border-foreground/40 p-1.5 font-bold bg-muted/40"
-                    >
-                      Kelompok B
-                    </td>
-                  </tr>
-                  {/* Seni Budaya dan Prakarya */}
-                  <tr>
-                    <td className="border border-foreground/40 p-1.5 text-center tabular-nums">1</td>
-                    <td className="border border-foreground/40 p-1.5">
-                      {MATA_PELAJARAN_FULL["SBdP"] || "Seni Budaya dan Prakarya"}
-                    </td>
-                    <td className="border border-foreground/40 p-1.5 text-center tabular-nums">
-                      {nilaiIjazah["SBdP"]
-                        ? nilaiIjazah["SBdP"].toFixed(2).replace(".", ",")
-                        : ""}
-                    </td>
-                  </tr>
-                  {/* PJOK */}
-                  <tr>
-                    <td className="border border-foreground/40 p-1.5 text-center tabular-nums">2</td>
-                    <td className="border border-foreground/40 p-1.5">
-                      {MATA_PELAJARAN_FULL["PJOK"] || "PJOK"}
-                    </td>
-                    <td className="border border-foreground/40 p-1.5 text-center tabular-nums">
-                      {nilaiIjazah["PJOK"]
-                        ? nilaiIjazah["PJOK"].toFixed(2).replace(".", ",")
-                        : ""}
-                    </td>
-                  </tr>
-                  {/* Muatan Lokal header */}
-                  <tr>
-                    <td className="border border-foreground/40 p-1.5 text-center tabular-nums">
-                      3
-                    </td>
-                    <td className="border border-foreground/40 p-1.5 font-semibold">
-                      Muatan Lokal
-                    </td>
-                    <td className="border border-foreground/40 p-1.5" />
-                  </tr>
-                  {/* Muatan Lokal a. Bahasa Sunda */}
-                  <tr>
-                    <td className="border border-foreground/40 p-1.5 text-center tabular-nums" />
-                    <td className="border border-foreground/40 p-1.5 pl-8">
-                      a. {MATA_PELAJARAN_FULL["Bahasa Sunda"] || "Bahasa Sunda"}
-                    </td>
-                    <td className="border border-foreground/40 p-1.5 text-center tabular-nums">
-                      {nilaiIjazah["Bahasa Sunda"]
-                        ? nilaiIjazah["Bahasa Sunda"].toFixed(2).replace(".", ",")
-                        : "-"}
-                    </td>
-                  </tr>
-                  {/* Muatan Lokal b. Bahasa Inggris */}
-                  <tr>
-                    <td className="border border-foreground/40 p-1.5 text-center tabular-nums" />
-                    <td className="border border-foreground/40 p-1.5 pl-8">
-                      b. {MATA_PELAJARAN_FULL["Inggris"] || "Bahasa Inggris"}
-                    </td>
-                    <td className="border border-foreground/40 p-1.5 text-center tabular-nums">
-                      {nilaiIjazah["Inggris"]
-                        ? nilaiIjazah["Inggris"].toFixed(2).replace(".", ",")
-                        : "-"}
-                    </td>
-                  </tr>
-                  {/* Muatan Lokal c. Komputer */}
-                  <tr>
-                    <td className="border border-foreground/40 p-1.5 text-center tabular-nums" />
-                    <td className="border border-foreground/40 p-1.5 pl-8">
-                      c. {MATA_PELAJARAN_FULL["Komputer"] || "Komputer"}
-                    </td>
-                    <td className="border border-foreground/40 p-1.5 text-center tabular-nums">
-                      {nilaiIjazah["Komputer"]
-                        ? nilaiIjazah["Komputer"].toFixed(2).replace(".", ",")
-                        : "-"}
-                    </td>
-                  </tr>
 
                   <tr>
                     <td
@@ -240,7 +199,7 @@ export default function SuratTranskripNilai() {
                       Jumlah Nilai
                     </td>
                     <td className="border border-foreground/40 p-1.5 text-center tabular-nums font-bold">
-                      {jumlah.toFixed(2).replace(".", ",")}
+                      {nilaiKurmer.total.toFixed(2).replace(".", ",")}
                     </td>
                   </tr>
 
@@ -252,18 +211,29 @@ export default function SuratTranskripNilai() {
                       Rata-rata
                     </td>
                     <td className="border border-foreground/40 p-1.5 text-center tabular-nums font-bold">
-                      {rataRata.toFixed(2).replace(".", ",")}
+                      {nilaiKurmer.avg.toFixed(2).replace(".", ",")}
                     </td>
                   </tr>
                 </tbody>
               </table>
+
+              <div className="text-[11pt] text-justify indent-8 mb-6">
+                Berdasarkan kriteria kelulusan Fase C dan penyelesaian Projek Penguatan Profil Pelajar
+                Pancasila (P5)
+              </div>
 
               <TandaTanganKepala />
             </div>
           </CardContent>
         </Card>
       )}
+
+      <div className="no-print fixed bottom-6 right-6 z-50">
+        <Button onClick={() => navigate("/dashboard")} className="h-11 rounded-xl shadow-xl">
+          <LayoutDashboard className="mr-2 h-4 w-4" />
+          Kembali ke Dashboard
+        </Button>
+      </div>
     </div>
   );
 }
-

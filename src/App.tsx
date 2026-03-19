@@ -19,6 +19,7 @@ import SuratTranskripNilai from "@/pages/print/SuratTranskripNilai";
 import SerahTerimaIjazah from "@/pages/print/SerahTerimaIjazah";
 import DaftarKendaliIjazah from "@/pages/print/DaftarKendaliIjazah";
 import AmplopKelulusan from "@/pages/print/AmplopKelulusan";
+import AIToolsPembuatSoal from "@/pages/AIToolsPembuatSoal";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/identitas-sekolah" element={<Settings />} />
             <Route path="/identitas-kepala-sekolah" element={<IdentitasKepalaSekolah />} />
+            <Route path="/ai-tools" element={<AIToolsPembuatSoal />} />
             <Route path="/data-siswa" element={<DataSiswa />} />
             <Route path="/pengaturan-bobot" element={<PengaturanBobot />} />
             <Route path="/nilai/:semester" element={<NilaiSemester />} />

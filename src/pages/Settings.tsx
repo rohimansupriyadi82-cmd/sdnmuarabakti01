@@ -83,7 +83,8 @@ export default function Settings() {
     | "kodePos"
     | "provinsi"
     | "email"
-    | "tahunPelajaran";
+    | "tahunPelajaran"
+    | "noSuratTranskrip";
 
   const fields = useMemo(
     (): { key: SettingsFieldKey; label: string }[] => [
@@ -98,6 +99,7 @@ export default function Settings() {
       { key: "provinsi", label: "Provinsi" },
       { key: "email", label: "Email" },
       { key: "tahunPelajaran", label: "Tahun Pelajaran" },
+      { key: "noSuratTranskrip", label: "Nomor Surat Transkrip Nilai" },
     ],
     [],
   );

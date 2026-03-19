@@ -40,6 +40,7 @@ export interface DataSekolah {
   mapelMuloInggris: boolean;
   mapelMuloKomputer: boolean;
   nomorSurat: string;
+  noSuratTranskrip: string;
   noSuratLulus: string;
   tglSuratLulus: string;
   noSuratKelakuanBaik: string;
@@ -156,7 +157,7 @@ const generateStudents = (): Siswa[] =>
   }));
 
 const defaultSekolah: DataSekolah = {
-  namaSekolah: 'SD NEGERI MUARA BAKTI 01',
+  namaSekolah: 'SD NEGERI MUARA BAKTI',
   npsn: '20254321',
   status: 'Negeri',
   alamatSekolah: 'Jl. Bayangkara RT. 12/07 Ds. Muara Bakti',
@@ -171,12 +172,13 @@ const defaultSekolah: DataSekolah = {
   logoDataUrl: null,
   
   // Identitas Kepala Sekolah
-  kepalaSekolah: 'ROHIMAH, S.Pd',
-  nipKepalaSekolah: '19680604 200604 2 004',
+  kepalaSekolah: 'ROHIMAN SUPRIYADI',
+  nipKepalaSekolah: '',
   mapelMuloSunda: true,
   mapelMuloInggris: true,
   mapelMuloKomputer: true,
   nomorSurat: '421.2/001/SDNMB01/III/2026',
+  noSuratTranskrip: '400.3.11.1/040/SD.37/VI/2026',
   noSuratLulus: '400.3.12.1/041/SD.37/VI/2025',
   tglSuratLulus: new Date().toISOString().split('T')[0],
   noSuratKelakuanBaik: '400.3.12.1/042/SD.37/VI/2025',

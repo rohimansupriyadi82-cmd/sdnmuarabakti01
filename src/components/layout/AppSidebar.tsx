@@ -2,7 +2,7 @@ import {
   BookOpen, Calendar, ChevronRight, ClipboardList, 
   FileText, GraduationCap, LayoutDashboard, LogOut, 
   Settings, Users, BarChart, Download, Printer,
-  School, ChevronDown, CreditCard, LayoutGrid, ClipboardCheck, Banknote
+  School, ChevronDown, CreditCard, LayoutGrid, ClipboardCheck, Banknote, Sparkles
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -64,6 +64,10 @@ const pengaturanItems = [
   { title: "Pengaturan Bobot", url: "/pengaturan-bobot", icon: Settings },
 ];
 
+const aiToolsItems = [
+  { title: "AI Tools Pembuat Soal", url: "https://aistudio.google.com/apps/drive/1jaCOIn8Lj4mlCBnIqp8x4oekUALhq5OQ?fullscreenApplet=true&showAssistant=true&showPreview=true", icon: Sparkles },
+];
+
 interface CollapsibleGroupProps {
   label: string;
   icon: React.ElementType;
@@ -111,9 +115,11 @@ function CollapsibleGroup({ label, icon: Icon, items, collapsed, colorClass }: C
                         {item.icon && <item.icon className="mr-2 h-4 w-4" />}
                         {!collapsed && <span className="text-sm">{item.title}</span>}
                       </button>
-                    ) : item.url.endsWith('.html') ? (
+                    ) : item.url.startsWith("http") || item.url.endsWith(".html") ? (
                       <a
                         href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="w-full flex items-center hover:bg-sidebar-accent/10 transition-colors duration-200 rounded-md px-2 py-1.5"
                       >
                         {item.icon && <item.icon className="mr-2 h-4 w-4" />}
@@ -201,6 +207,26 @@ export function AppSidebar() {
         <CollapsibleGroup label="INPUT NILAI" icon={BookOpen} items={inputNilaiItems} collapsed={collapsed} colorClass="text-teal-500" />
         <SidebarSeparator />
         <CollapsibleGroup label="DOKUMEN KELULUSAN" icon={Printer} items={dokumenKelulusanItems} collapsed={collapsed} colorClass="text-violet-500" />
+        <SidebarSeparator />
+        <CollapsibleGroup label="AI TOOLS" icon={Sparkles} items={aiToolsItems} collapsed={collapsed} colorClass="text-pink-500" />
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <NavLink
+                    to="/ai-tools"
+                    className="w-full flex items-center hover:bg-sidebar-accent/10 transition-colors duration-200 rounded-md px-2 py-1.5"
+                    activeClassName="text-sidebar-foreground bg-sidebar-accent/10 font-medium"
+                  >
+                    <Sparkles className="mr-2 h-4 w-4 text-pink-500" />
+                    {!collapsed && <span className="text-xs text-pink-500 font-semibold">Buka Halaman AI Tools</span>}
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter className="p-3 border-t border-sidebar-border">

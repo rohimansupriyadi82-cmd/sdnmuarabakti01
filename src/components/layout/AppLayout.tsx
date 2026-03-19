@@ -42,6 +42,7 @@ function PageTitle() {
     '/data-sekolah': 'Pengaturan Sekolah',
     '/pengaturan-sekolah': 'Pengaturan Sekolah',
     '/data-siswa': 'Data Peserta Didik',
+    '/ai-tools': 'AI Tools Pembuat Soal',
     '/pengaturan-bobot': 'Pengaturan Bobot Nilai',
     '/nilai-us': 'Nilai Ujian Sekolah',
   };
