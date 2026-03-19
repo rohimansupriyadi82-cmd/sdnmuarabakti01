@@ -31,13 +31,33 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-type StudentForm = Pick<Siswa, "nama" | "nisn" | "nis" | "jenisKelamin">;
+type StudentForm = Pick<
+  Siswa,
+  | "nomorPeserta"
+  | "nisn"
+  | "nis"
+  | "nama"
+  | "jenisKelamin"
+  | "tempatLahir"
+  | "tanggalLahir"
+  | "namaAyah"
+  | "namaIbu"
+  | "noSeriIjazah"
+  | "namaOrtuIjazah"
+>;
 
 const emptyForm: StudentForm = {
+  nomorPeserta: "",
   nama: "",
   nisn: "",
   nis: "",
   jenisKelamin: "L",
+  tempatLahir: "",
+  tanggalLahir: "",
+  namaAyah: "",
+  namaIbu: "",
+  noSeriIjazah: "",
+  namaOrtuIjazah: "",
 };
 
 const parseCSVLine = (line: string): string[] => {
@@ -76,6 +96,26 @@ const normalizeHeader = (h: string) =>
     .replace(/\./g, "")
     .replace(/_/g, " ");
 
+const normalizeTanggalLahir = (raw: string) => {
+  const v = raw.trim();
+  if (!v) return "";
+  const m = v.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+  if (m) {
+    const dd = m[1].padStart(2, "0");
+    const mm = m[2].padStart(2, "0");
+    const yyyy = m[3];
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  const iso = v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (iso) {
+    const yyyy = iso[1];
+    const mm = iso[2].padStart(2, "0");
+    const dd = iso[3].padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  return v;
+};
+
 export default function DataSiswa() {
   const navigate = useNavigate();
   const [siswaList, setSiswaList] = useSiswaList();
@@ -105,10 +145,17 @@ export default function DataSiswa() {
   const openEdit = (s: Siswa) => {
     setEditId(s.id);
     setForm({
+      nomorPeserta: s.nomorPeserta || "",
       nama: s.nama || "",
       nisn: s.nisn || "",
       nis: s.nis || "",
       jenisKelamin: s.jenisKelamin,
+      tempatLahir: s.tempatLahir || "",
+      tanggalLahir: s.tanggalLahir || "",
+      namaAyah: s.namaAyah || "",
+      namaIbu: s.namaIbu || "",
+      noSeriIjazah: s.noSeriIjazah || "",
+      namaOrtuIjazah: s.namaOrtuIjazah || "",
     });
     setDialogOpen(true);
   };
@@ -141,13 +188,6 @@ export default function DataSiswa() {
       }
       const newSiswa: Siswa = {
         id: `s${Date.now()}`,
-        nomorPeserta: "",
-        tempatLahir: "",
-        tanggalLahir: "",
-        namaAyah: "",
-        namaIbu: "",
-        noSeriIjazah: "",
-        namaOrtuIjazah: "",
         alamat: "",
         status: "aktif",
         ...form,
@@ -203,7 +243,7 @@ export default function DataSiswa() {
         const nomorPeserta = getValue(row, ["nomor peserta", "no peserta"]);
         const jkRaw = getValue(row, ["jenis kelamin lp", "jenis kelamin l/p", "jenis kelamin", "l/p", "kelamin"]);
         const tempatLahir = getValue(row, ["tempat lahir"]);
-        const tanggalLahir = getValue(row, ["tanggal lahir", "tgl lahir"]);
+        const tanggalLahir = normalizeTanggalLahir(getValue(row, ["tanggal lahir", "tgl lahir"]));
         const namaAyah = getValue(row, ["nama ayah", "ayah"]);
         const namaIbu = getValue(row, ["nama ibu", "ibu"]);
         const noSeriIjazah = getValue(row, ["no seri ijazah", "no seri", "seri ijazah"]);
@@ -304,7 +344,7 @@ export default function DataSiswa() {
                     No
                   </TableHead>
                   <TableHead className="text-xs font-semibold text-muted-foreground h-9 whitespace-nowrap">
-                    Nama
+                    Nomor Peserta
                   </TableHead>
                   <TableHead className="text-xs font-semibold text-muted-foreground h-9 whitespace-nowrap">
                     NISN
@@ -313,7 +353,28 @@ export default function DataSiswa() {
                     NIS
                   </TableHead>
                   <TableHead className="text-xs font-semibold text-muted-foreground h-9 whitespace-nowrap">
-                    L/P
+                    Nama Peserta
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold text-muted-foreground h-9 whitespace-nowrap">
+                    Jenis Kelamin (L/P)
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold text-muted-foreground h-9 whitespace-nowrap">
+                    Tempat Lahir
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold text-muted-foreground h-9 whitespace-nowrap">
+                    Tanggal Lahir
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold text-muted-foreground h-9 whitespace-nowrap">
+                    Nama Ayah
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold text-muted-foreground h-9 whitespace-nowrap">
+                    Nama Ibu
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold text-muted-foreground h-9 whitespace-nowrap">
+                    No. Seri Ijazah
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold text-muted-foreground h-9 whitespace-nowrap">
+                    Nama Ortu di Ijazah
                   </TableHead>
                   <TableHead className="text-xs font-semibold text-muted-foreground h-9 whitespace-nowrap">
                     Aksi
@@ -323,7 +384,7 @@ export default function DataSiswa() {
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={12} className="text-center py-8 text-muted-foreground">
                       Tidak ada data siswa ditemukan.
                     </TableCell>
                   </TableRow>
@@ -334,7 +395,7 @@ export default function DataSiswa() {
                         {idx + 1}
                       </TableCell>
                       <TableCell className="py-2 text-data whitespace-nowrap font-medium">
-                        {s.nama}
+                        {s.nomorPeserta}
                       </TableCell>
                       <TableCell className="py-2 text-data whitespace-nowrap tabular-nums">
                         {s.nisn}
@@ -342,8 +403,29 @@ export default function DataSiswa() {
                       <TableCell className="py-2 text-data whitespace-nowrap tabular-nums">
                         {s.nis}
                       </TableCell>
+                      <TableCell className="py-2 text-data whitespace-nowrap font-medium">
+                        {s.nama}
+                      </TableCell>
                       <TableCell className="py-2 text-data whitespace-nowrap">
                         {s.jenisKelamin}
+                      </TableCell>
+                      <TableCell className="py-2 text-data whitespace-nowrap">
+                        {s.tempatLahir}
+                      </TableCell>
+                      <TableCell className="py-2 text-data whitespace-nowrap tabular-nums">
+                        {s.tanggalLahir}
+                      </TableCell>
+                      <TableCell className="py-2 text-data whitespace-nowrap">
+                        {s.namaAyah}
+                      </TableCell>
+                      <TableCell className="py-2 text-data whitespace-nowrap">
+                        {s.namaIbu}
+                      </TableCell>
+                      <TableCell className="py-2 text-data whitespace-nowrap">
+                        {s.noSeriIjazah}
+                      </TableCell>
+                      <TableCell className="py-2 text-data whitespace-nowrap">
+                        {s.namaOrtuIjazah}
                       </TableCell>
                       <TableCell className="py-2 text-data whitespace-nowrap">
                         <div className="flex items-center gap-2">
@@ -392,6 +474,20 @@ export default function DataSiswa() {
           </DialogHeader>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 py-2">
+            <div className="sm:col-span-2">
+              <Label htmlFor="nomorPeserta" className="text-sm">
+                Nomor Peserta
+              </Label>
+              <Input
+                id="nomorPeserta"
+                value={form.nomorPeserta}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, nomorPeserta: e.target.value }))
+                }
+                className="h-9 mt-1"
+              />
+            </div>
+
             <div className="sm:col-span-2">
               <Label htmlFor="nama" className="text-sm">
                 Nama
@@ -444,6 +540,94 @@ export default function DataSiswa() {
                   <SelectItem value="P">Perempuan</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="tempatLahir" className="text-sm">
+                Tempat Lahir
+              </Label>
+              <Input
+                id="tempatLahir"
+                value={form.tempatLahir}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, tempatLahir: e.target.value }))
+                }
+                className="h-9 mt-1"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="tanggalLahir" className="text-sm">
+                Tanggal Lahir
+              </Label>
+              <Input
+                id="tanggalLahir"
+                value={form.tanggalLahir}
+                onChange={(e) =>
+                  setForm((p) => ({
+                    ...p,
+                    tanggalLahir: normalizeTanggalLahir(e.target.value),
+                  }))
+                }
+                className="h-9 mt-1"
+                placeholder="YYYY-MM-DD atau DD/MM/YYYY"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="namaAyah" className="text-sm">
+                Nama Ayah
+              </Label>
+              <Input
+                id="namaAyah"
+                value={form.namaAyah}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, namaAyah: e.target.value }))
+                }
+                className="h-9 mt-1"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="namaIbu" className="text-sm">
+                Nama Ibu
+              </Label>
+              <Input
+                id="namaIbu"
+                value={form.namaIbu}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, namaIbu: e.target.value }))
+                }
+                className="h-9 mt-1"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="noSeriIjazah" className="text-sm">
+                No. Seri Ijazah
+              </Label>
+              <Input
+                id="noSeriIjazah"
+                value={form.noSeriIjazah}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, noSeriIjazah: e.target.value }))
+                }
+                className="h-9 mt-1"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <Label htmlFor="namaOrtuIjazah" className="text-sm">
+                Nama Ortu di Ijazah
+              </Label>
+              <Input
+                id="namaOrtuIjazah"
+                value={form.namaOrtuIjazah}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, namaOrtuIjazah: e.target.value }))
+                }
+                className="h-9 mt-1"
+              />
             </div>
           </div>
 

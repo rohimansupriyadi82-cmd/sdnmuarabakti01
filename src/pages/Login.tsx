@@ -80,8 +80,11 @@ export default function Login() {
               {loading ? "Memproses..." : "Masuk"}
             </Button>
             <div className="flex flex-col items-center gap-2">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
-                Default Access: admin / admin
+              <p className="text-sm font-black text-slate-700 tracking-wide">
+                ROHIMAN SUPRIYADI
+              </p>
+              <p className="text-xs font-bold text-slate-500">
+                2026
               </p>
               <div className="h-1 w-8 bg-slate-100 rounded-full"></div>
             </div>
