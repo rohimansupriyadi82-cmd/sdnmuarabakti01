@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
   useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel,
   getSortedRowModel, flexRender, type ColumnDef, type SortingState,
@@ -21,6 +21,26 @@ import { Plus, Search, Edit2, Trash2, ChevronLeft, ChevronRight, Upload, Downloa
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
+const parseCSVLine = (line: string): string[] => {
+  const result: string[] = [];
+  let current = "";
+  let inQuotes = false;
+  for (const ch of line) {
+    if (ch === "\"") {
+      inQuotes = !inQuotes;
+      continue;
+    }
+    if (ch === "," && !inQuotes) {
+      result.push(current);
+      current = "";
+      continue;
+    }
+    current += ch;
+  }
+  result.push(current);
+  return result;
+};
+
 const emptyStudent: Omit<Siswa, 'id'> = {
   nomorPeserta: '', nisn: '', nis: '', nama: '', jenisKelamin: 'L',
   tempatLahir: '', tanggalLahir: '', namaAyah: '', namaIbu: '',
@@ -37,47 +57,94 @@ export default function DataSiswa() {
   const [form, setForm] = useState(emptyStudent);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // CSV Import
-  const handleCSVImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDelete = useCallback((id: string) => {
+    setSiswaList((prev) => prev.filter((s) => s.id !== id));
+    toast.success("Data peserta didik berhasil dihapus");
+  }, [setSiswaList]);
+
+  const openEdit = useCallback((siswa: Siswa) => {
+    setEditId(siswa.id);
+    const { id, ...rest } = siswa;
+    setForm(rest);
+    setDialogOpen(true);
+  }, []);
+
+  const openAdd = useCallback(() => {
+    setEditId(null);
+    setForm({ ...emptyStudent });
+    setDialogOpen(true);
+  }, []);
+
+  const handleSave = useCallback(() => {
+    if (!form.nama || !form.nisn) {
+      toast.error("Nama dan NISN wajib diisi");
+      return;
+    }
+
+    if (editId) {
+      setSiswaList((prev) => prev.map((s) => (s.id === editId ? { ...form, id: editId } : s)));
+      toast.success("Data peserta didik berhasil diperbarui");
+      setDialogOpen(false);
+      return;
+    }
+
+    setSiswaList((prev) => {
+      if (prev.length >= 500) {
+        toast.error("Kapasitas maksimal 500 peserta didik");
+        return prev;
+      }
+      return [...prev, { ...form, id: `s${Date.now()}` }];
+    });
+    toast.success("Data peserta didik berhasil ditambahkan");
+    setDialogOpen(false);
+  }, [editId, form, setSiswaList]);
+
+  const handleCSVImport = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
     const reader = new FileReader();
     reader.onload = (evt) => {
-      const text = evt.target?.result as string;
-      const lines = text.split('\n').filter(l => l.trim());
-      if (lines.length < 2) { toast.error("File CSV kosong"); return; }
-      
-      // Parse header
-      const header = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g, ''));
+      const text = String(evt.target?.result || "");
+      const lines = text.split("\n").filter((l) => l.trim());
+      if (lines.length < 2) {
+        toast.error("File CSV kosong");
+        return;
+      }
+
+      const header = lines[0]
+        .split(",")
+        .map((h) => h.trim().toLowerCase().replace(/"/g, ""));
+
       const newStudents: Siswa[] = [];
-      
+
       for (let i = 1; i < lines.length; i++) {
         const values = parseCSVLine(lines[i]);
         if (values.length < 4) continue;
-        
+
         const get = (keys: string[]) => {
           for (const k of keys) {
-            const idx = header.findIndex(h => h.includes(k));
+            const idx = header.findIndex((h) => h.includes(k));
             if (idx >= 0 && values[idx]) return values[idx].trim();
           }
-          return '';
+          return "";
         };
 
         newStudents.push({
           id: `s${Date.now()}-${i}`,
-          nomorPeserta: get(['nomor peserta', 'no peserta']),
-          nisn: get(['nisn']),
-          nis: get(['nis', 'no induk']),
-          nama: get(['nama peserta', 'nama']),
-          jenisKelamin: (get(['jenis kelamin', 'l/p', 'kelamin']).toUpperCase().startsWith('P') ? 'P' : 'L') as 'L' | 'P',
-          tempatLahir: get(['tempat lahir']),
-          tanggalLahir: get(['tanggal lahir', 'tgl lahir']),
-          namaAyah: get(['nama ayah', 'ayah']),
-          namaIbu: get(['nama ibu', 'ibu']),
-          noSeriIjazah: get(['no. seri', 'seri ijazah', 'no seri']),
-          namaOrtuIjazah: get(['nama ortu di ijazah', 'ortu ijazah', 'nama ortu']),
-          alamat: get(['alamat']),
-          status: 'aktif',
+          nomorPeserta: get(["nomor peserta", "no peserta"]),
+          nisn: get(["nisn"]),
+          nis: get(["nis", "no induk"]),
+          nama: get(["nama peserta", "nama"]),
+          jenisKelamin: (get(["jenis kelamin", "l/p", "kelamin"]).toUpperCase().startsWith("P") ? "P" : "L") as "L" | "P",
+          tempatLahir: get(["tempat lahir"]),
+          tanggalLahir: get(["tanggal lahir", "tgl lahir"]),
+          namaAyah: get(["nama ayah", "ayah"]),
+          namaIbu: get(["nama ibu", "ibu"]),
+          noSeriIjazah: get(["no. seri", "seri ijazah", "no seri"]),
+          namaOrtuIjazah: get(["nama ortu di ijazah", "ortu ijazah", "nama ortu"]),
+          alamat: get(["alamat"]),
+          status: "aktif",
         });
       }
 
@@ -86,35 +153,21 @@ export default function DataSiswa() {
         return;
       }
 
-      const total = siswaList.length + newStudents.length;
-      if (total > 500) {
-        toast.error(`Kapasitas melebihi 500 (${total} siswa)`);
-        return;
-      }
-
-      setSiswaList([...siswaList, ...newStudents]);
+      setSiswaList((prev) => {
+        const total = prev.length + newStudents.length;
+        if (total > 500) {
+          toast.error(`Kapasitas melebihi 500 (${total} siswa)`);
+          return prev;
+        }
+        return [...prev, ...newStudents];
+      });
       toast.success(`${newStudents.length} peserta didik berhasil diimpor`);
     };
     reader.readAsText(file);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, [setSiswaList]);
 
-  // CSV line parser (handles quoted values)
-  const parseCSVLine = (line: string): string[] => {
-    const result: string[] = [];
-    let current = '';
-    let inQuotes = false;
-    for (const ch of line) {
-      if (ch === '"') { inQuotes = !inQuotes; continue; }
-      if (ch === ',' && !inQuotes) { result.push(current); current = ''; continue; }
-      current += ch;
-    }
-    result.push(current);
-    return result;
-  };
-
-  // CSV Template Download
-  const downloadTemplate = () => {
+  const downloadTemplate = useCallback(() => {
     const headers = 'Nomor Peserta,NISN,NIS,Nama Peserta,Jenis Kelamin (L/P),Tempat Lahir,Tanggal Lahir,Nama Ayah,Nama Ibu,No. Seri Ijazah,Nama Ortu di Ijazah,Alamat';
     const sample = '26-02-12-064-01-009,3130369278,202101001,Aditia Ramadan,L,Bekasi,11/07/2013,Niman,Sainih,1,Niman,Muara Bakti';
     const blob = new Blob([headers + '\n' + sample + '\n'], { type: 'text/csv' });
@@ -122,7 +175,7 @@ export default function DataSiswa() {
     const a = document.createElement('a');
     a.href = url; a.download = 'template_data_siswa.csv'; a.click();
     URL.revokeObjectURL(url);
-  };
+  }, []);
 
   const columns = useMemo<ColumnDef<Siswa>[]>(() => [
     { header: "No", cell: ({ row }) => row.index + 1, size: 40 },
@@ -181,7 +234,7 @@ export default function DataSiswa() {
         </div>
       ),
     },
-  ], []);
+  ], [handleDelete, navigate, openEdit]);
 
   const table = useReactTable({
     data: siswaList,
@@ -195,43 +248,6 @@ export default function DataSiswa() {
     getSortedRowModel: getSortedRowModel(),
     initialState: { pagination: { pageSize: 30 } },
   });
-
-  const openEdit = (siswa: Siswa) => {
-    setEditId(siswa.id);
-    const { id, ...rest } = siswa;
-    setForm(rest);
-    setDialogOpen(true);
-  };
-
-  const openAdd = () => {
-    setEditId(null);
-    setForm({ ...emptyStudent });
-    setDialogOpen(true);
-  };
-
-  const handleSave = () => {
-    if (!form.nama || !form.nisn) {
-      toast.error("Nama dan NISN wajib diisi");
-      return;
-    }
-    if (editId) {
-      setSiswaList(siswaList.map(s => s.id === editId ? { ...form, id: editId } : s));
-      toast.success("Data peserta didik berhasil diperbarui");
-    } else {
-      if (siswaList.length >= 500) {
-        toast.error("Kapasitas maksimal 500 peserta didik");
-        return;
-      }
-      setSiswaList([...siswaList, { ...form, id: `s${Date.now()}` }]);
-      toast.success("Data peserta didik berhasil ditambahkan");
-    }
-    setDialogOpen(false);
-  };
-
-  const handleDelete = (id: string) => {
-    setSiswaList(siswaList.filter(s => s.id !== id));
-    toast.success("Data peserta didik berhasil dihapus");
-  };
 
   type FormFieldKey = Exclude<keyof typeof emptyStudent, "jenisKelamin" | "status">;
 

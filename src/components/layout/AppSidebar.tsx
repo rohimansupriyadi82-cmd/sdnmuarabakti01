@@ -69,9 +69,10 @@ interface CollapsibleGroupProps {
   icon: React.ElementType;
   items: { title: string; url: string; icon?: React.ElementType; onClick?: boolean }[];
   collapsed: boolean;
+  colorClass?: string;
 }
 
-function CollapsibleGroup({ label, icon: Icon, items, collapsed }: CollapsibleGroupProps) {
+function CollapsibleGroup({ label, icon: Icon, items, collapsed, colorClass }: CollapsibleGroupProps) {
   const location = useLocation();
   const isActive = items.some(item => location.pathname === item.url || location.pathname.startsWith(item.url + '/'));
 
@@ -90,8 +91,8 @@ function CollapsibleGroup({ label, icon: Icon, items, collapsed }: CollapsibleGr
         <CollapsibleTrigger className="w-full text-left">
           <SidebarGroupLabel className="flex items-center justify-between text-sidebar-foreground/60 hover:text-sidebar-foreground/80 transition-colors cursor-pointer">
             <span className="flex items-center gap-2">
-              <Icon className="h-4 w-4" />
-              {!collapsed && label}
+              <Icon className={["h-4 w-4", colorClass].filter(Boolean).join(" ")} />
+              {!collapsed && <span className={colorClass}>{label}</span>}
             </span>
             {!collapsed && <ChevronDown className="h-3 w-3 transition-transform duration-200 [[data-state=open]>&]:rotate-180" />}
           </SidebarGroupLabel>
@@ -181,7 +182,7 @@ export function AppSidebar() {
                     className="w-full flex items-center hover:bg-sidebar-accent/10 transition-colors duration-200 rounded-md px-2 py-1.5"
                     activeClassName="text-sidebar-foreground bg-sidebar-accent/10 font-medium"
                   >
-                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    <LayoutDashboard className="mr-2 h-4 w-4 text-blue-500" />
                     {!collapsed && <span>Dashboard</span>}
                   </NavLink>
                 </SidebarMenuButton>
@@ -191,15 +192,15 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarSeparator />
-        <CollapsibleGroup label="PENGATURAN" icon={Settings} items={pengaturanItems} collapsed={collapsed} />
+        <CollapsibleGroup label="PENGATURAN" icon={Settings} items={pengaturanItems} collapsed={collapsed} colorClass="text-amber-500" />
         <SidebarSeparator />
-        <CollapsibleGroup label="ADMINISTRASI GURU KELAS" icon={Users} items={administrasiGuruKelasItems} collapsed={collapsed} />
+        <CollapsibleGroup label="ADMINISTRASI GURU KELAS" icon={Users} items={administrasiGuruKelasItems} collapsed={collapsed} colorClass="text-emerald-500" />
         <SidebarSeparator />
-        <CollapsibleGroup label="DATA MASTER" icon={FileText} items={dataMasterItems} collapsed={collapsed} />
+        <CollapsibleGroup label="DATA MASTER" icon={FileText} items={dataMasterItems} collapsed={collapsed} colorClass="text-orange-500" />
         <SidebarSeparator />
-        <CollapsibleGroup label="INPUT NILAI" icon={BookOpen} items={inputNilaiItems} collapsed={collapsed} />
+        <CollapsibleGroup label="INPUT NILAI" icon={BookOpen} items={inputNilaiItems} collapsed={collapsed} colorClass="text-teal-500" />
         <SidebarSeparator />
-        <CollapsibleGroup label="DOKUMEN KELULUSAN" icon={Printer} items={dokumenKelulusanItems} collapsed={collapsed} />
+        <CollapsibleGroup label="DOKUMEN KELULUSAN" icon={Printer} items={dokumenKelulusanItems} collapsed={collapsed} colorClass="text-violet-500" />
       </SidebarContent>
 
       <SidebarFooter className="p-3 border-t border-sidebar-border">

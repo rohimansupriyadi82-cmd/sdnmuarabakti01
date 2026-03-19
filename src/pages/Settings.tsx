@@ -11,6 +11,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
 
 export default function Settings() {
   const [sekolah, setSekolah] = useSekolah();
@@ -80,9 +83,7 @@ export default function Settings() {
     | "kodePos"
     | "provinsi"
     | "email"
-    | "tahunPelajaran"
-    | "kepalaSekolah"
-    | "nipKepalaSekolah";
+    | "tahunPelajaran";
 
   const fields = useMemo(
     (): { key: SettingsFieldKey; label: string }[] => [
@@ -97,8 +98,6 @@ export default function Settings() {
       { key: "provinsi", label: "Provinsi" },
       { key: "email", label: "Email" },
       { key: "tahunPelajaran", label: "Tahun Pelajaran" },
-      { key: "kepalaSekolah", label: "Nama Kepala Sekolah" },
-      { key: "nipKepalaSekolah", label: "NIP Kepala Sekolah" },
     ],
     [],
   );
@@ -169,12 +168,27 @@ export default function Settings() {
                 <Label htmlFor={key} className="text-sm">
                   {label}
                 </Label>
-                <Input
-                  id={key}
-                  value={form[key] || ""}
-                  onChange={(e) => handleChange(key, e.target.value)}
-                  className="h-9 mt-1"
-                />
+                {key === "status" ? (
+                  <Select
+                    value={form.status}
+                    onValueChange={(v) => handleChange("status", v as DataSekolah["status"])}
+                  >
+                    <SelectTrigger className="h-9 mt-1">
+                      <SelectValue placeholder="Pilih status sekolah" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Negeri">Negeri</SelectItem>
+                      <SelectItem value="Swasta">Swasta</SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input
+                    id={key}
+                    value={form[key] || ""}
+                    onChange={(e) => handleChange(key, e.target.value)}
+                    className="h-9 mt-1"
+                  />
+                )}
               </div>
             ))}
             <div className="space-y-1">
