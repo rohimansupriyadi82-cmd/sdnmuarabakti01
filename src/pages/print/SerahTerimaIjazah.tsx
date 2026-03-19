@@ -19,31 +19,15 @@ const pageStyle = `
 
 export default function SerahTerimaIjazah() {
   const store = getStore();
-  const [sekolah, setSekolah] = useSekolah();
   const siswaList = useMemo(() => [...store.siswaList], [store.siswaList]);
   const printRef = useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({ contentRef: printRef, pageStyle });
-
-  const handleDateChange = (val: string) => {
-    setSekolah({ ...sekolah, tanggalKelulusan: val });
-  };
 
   return (
     <div className="space-y-4 animate-fade-in">
       <Card className="shadow-card no-print">
         <CardHeader className="flex flex-row items-center justify-between">
-          <div className="flex items-center gap-6">
-            <CardTitle className="text-heading font-semibold">Tanda Serah Terima Ijazah</CardTitle>
-            <div className="flex items-center gap-2">
-              <label className="text-xs font-medium text-foreground whitespace-nowrap">Tanggal Kelulusan:</label>
-              <Input 
-                type="date" 
-                value={sekolah.tanggalKelulusan || sekolah.tanggalSurat || ""} 
-                onChange={(e) => handleDateChange(e.target.value)}
-                className="h-8 w-40"
-              />
-            </div>
-          </div>
+          <CardTitle className="text-heading font-semibold">Tanda Serah Terima Ijazah</CardTitle>
           <Button onClick={() => handlePrint()} size="sm" className="h-9">
             <Printer className="mr-2 h-4 w-4" /> Cetak
           </Button>

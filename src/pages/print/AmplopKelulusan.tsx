@@ -25,6 +25,9 @@ const pageStyle = `
   }
 `;
 
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
+
 export default function AmplopKelulusan() {
   const store = getStore();
   const [sekolah] = useSekolah();
@@ -47,6 +50,12 @@ export default function AmplopKelulusan() {
   const siswa = store.siswaList.find((s) => s.id === selectedSiswa);
   const s = sekolah;
   const logoSrc = s.logoDataUrl || logoBekasi;
+
+  // Format tanggal sesuai standar dinas
+  const effectiveDate = s.tanggalSurat;
+  const displayTanggal = effectiveDate 
+    ? format(new Date(effectiveDate), "d MMMM yyyy", { locale: id }) 
+    : format(new Date(), "d MMMM yyyy", { locale: id });
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -122,8 +131,13 @@ export default function AmplopKelulusan() {
 
               <div style={{ borderBottom: "2px solid black", marginTop: "3mm" }} />
 
+              {/* Tanggal di kanan atas sesuai format dinas */}
+              <div style={{ textAlign: "right", marginTop: "2mm", fontSize: "10pt" }}>
+                {s.kota || s.kabupaten || "Bekasi"}, {displayTanggal}
+              </div>
+
               {/* Nomor & Hal */}
-              <div style={{ marginTop: "3mm", fontSize: "10pt" }}>
+              <div style={{ marginTop: "1mm", fontSize: "10pt" }}>
                 <div style={{ display: "flex" }}>
                   <span style={{ width: "18mm" }}>Nomor</span>
                   <span style={{ width: "4mm" }}>:</span>

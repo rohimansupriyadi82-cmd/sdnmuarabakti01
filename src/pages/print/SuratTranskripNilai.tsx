@@ -17,7 +17,6 @@ import { Printer } from "lucide-react";
 
 export default function SuratTranskripNilai() {
   const store = getStore();
-  const [sekolah, setSekolah] = useSekolah();
   const params = useParams<{ siswaId?: string }>();
   const initialId = params.siswaId && store.siswaList.some(s => s.id === params.siswaId)
     ? params.siswaId
@@ -46,25 +45,12 @@ export default function SuratTranskripNilai() {
   const jumlah = nilaiArr.reduce((a, b) => a + b, 0);
   const rataRata = nilaiArr.length > 0 ? jumlah / nilaiArr.length : 0;
 
-  const handleDateChange = (val: string) => {
-    setSekolah({ ...sekolah, tanggalKelulusan: val });
-  };
-
   return (
     <div className="space-y-4 animate-fade-in">
       <Card className="shadow-card no-print">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-heading font-semibold">Surat Transkrip Nilai</CardTitle>
           <div className="flex items-center gap-3">
-            <div className="space-y-1">
-              <label className="text-[10px] font-medium text-foreground block uppercase tracking-wider">Tanggal Kelulusan</label>
-              <Input 
-                type="date" 
-                value={sekolah.tanggalKelulusan || sekolah.tanggalSurat || ""} 
-                onChange={(e) => handleDateChange(e.target.value)}
-                className="h-9 w-40"
-              />
-            </div>
             <div className="max-w-xs">
               <label className="text-[10px] font-medium text-foreground block uppercase tracking-wider">
                 Peserta Didik

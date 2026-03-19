@@ -69,10 +69,12 @@ export function KopSekolah({ nomorSurat, judulSurat, hideDefaultJudul = false }:
 
 export function TandaTanganKepala({ tanggal }: { tanggal?: string }) {
   const [s] = useSekolah();
-  // Prioritas: 1. Props 'tanggal', 2. Tanggal Kelulusan khusus, 3. Tanggal Surat Default, 4. Hari ini
-  const effectiveDate = tanggal || s.tanggalKelulusan || s.tanggalSurat;
-  const displayTanggal = effectiveDate ? format(new Date(effectiveDate), "d MMMM yyyy", { locale: id }) : format(new Date(), "d MMMM yyyy", { locale: id });
-  const displayKota = s.kota || s.kabupaten;
+  // PUSAT KONTROL TANGGAL: Mengambil dari Pengaturan (tanggalSurat) sebagai sumber tunggal
+  const effectiveDate = tanggal || s.tanggalSurat;
+  const displayTanggal = effectiveDate 
+    ? format(new Date(effectiveDate), "d MMMM yyyy", { locale: id }) 
+    : format(new Date(), "d MMMM yyyy", { locale: id });
+  const displayKota = s.kota || s.kabupaten || "Bekasi";
 
   return (
     <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '40px', fontFamily: "'Times New Roman', serif" }}>
