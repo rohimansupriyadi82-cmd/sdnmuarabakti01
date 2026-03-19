@@ -1,9 +1,11 @@
 import { useMemo, useRef } from "react";
 import { useReactToPrint } from "react-to-print";
-import { getStore } from "@/lib/store";
+import { getStore, useSekolah } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Printer } from "lucide-react";
+import { TandaTanganKepala } from "@/components/print/KopSekolah";
 
 const pageStyle = `
   @page {
@@ -17,15 +19,31 @@ const pageStyle = `
 
 export default function SerahTerimaIjazah() {
   const store = getStore();
+  const [sekolah, setSekolah] = useSekolah();
   const siswaList = useMemo(() => [...store.siswaList], [store.siswaList]);
   const printRef = useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({ contentRef: printRef, pageStyle });
+
+  const handleDateChange = (val: string) => {
+    setSekolah({ ...sekolah, tanggalKelulusan: val });
+  };
 
   return (
     <div className="space-y-4 animate-fade-in">
       <Card className="shadow-card no-print">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-heading font-semibold">Tanda Serah Terima Ijazah</CardTitle>
+          <div className="flex items-center gap-6">
+            <CardTitle className="text-heading font-semibold">Tanda Serah Terima Ijazah</CardTitle>
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-medium text-foreground whitespace-nowrap">Tanggal Kelulusan:</label>
+              <Input 
+                type="date" 
+                value={sekolah.tanggalKelulusan || sekolah.tanggalSurat || ""} 
+                onChange={(e) => handleDateChange(e.target.value)}
+                className="h-8 w-40"
+              />
+            </div>
+          </div>
           <Button onClick={() => handlePrint()} size="sm" className="h-9">
             <Printer className="mr-2 h-4 w-4" /> Cetak
           </Button>
@@ -111,11 +129,7 @@ export default function SerahTerimaIjazah() {
 
             <div style={{ display: "flex", justifyContent: "center", marginTop: "10mm" }}>
               <div style={{ textAlign: "center", fontSize: "10pt", width: "80mm" }}>
-                <div>Bekasi, 02 Juni 2025</div>
-                <div style={{ marginTop: "2mm" }}>Kepala Sekolah</div>
-                <div style={{ height: "18mm" }} />
-                <div style={{ fontWeight: 700, textDecoration: "underline" }}>{store.sekolah.kepalaSekolah}</div>
-                <div>NIP {store.sekolah.nipKepalaSekolah}</div>
+                <TandaTanganKepala />
               </div>
             </div>
           </div>

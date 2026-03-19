@@ -69,7 +69,9 @@ export function KopSekolah({ nomorSurat, judulSurat, hideDefaultJudul = false }:
 
 export function TandaTanganKepala({ tanggal }: { tanggal?: string }) {
   const [s] = useSekolah();
-  const displayTanggal = tanggal || (s.tanggalSurat ? format(new Date(s.tanggalSurat), "d MMMM yyyy", { locale: id }) : format(new Date(), "d MMMM yyyy", { locale: id }));
+  // Prioritas: 1. Props 'tanggal', 2. Tanggal Kelulusan khusus, 3. Tanggal Surat Default, 4. Hari ini
+  const effectiveDate = tanggal || s.tanggalKelulusan || s.tanggalSurat;
+  const displayTanggal = effectiveDate ? format(new Date(effectiveDate), "d MMMM yyyy", { locale: id }) : format(new Date(), "d MMMM yyyy", { locale: id });
   const displayKota = s.kota || s.kabupaten;
 
   return (

@@ -1,9 +1,10 @@
 import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
-import { getStore, calculateNilaiIjazah, MATA_PELAJARAN, MATA_PELAJARAN_FULL } from "@/lib/store";
+import { getStore, calculateNilaiIjazah, MATA_PELAJARAN, MATA_PELAJARAN_FULL, useSekolah } from "@/lib/store";
 import { KopSekolah, TandaTanganKepala } from "@/components/print/KopSekolah";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -11,6 +12,7 @@ import { Printer, ChevronLeft } from "lucide-react";
 
 export default function SuratKelulusan() {
   const store = getStore();
+  const [sekolah, setSekolah] = useSekolah();
   const [selectedSiswa, setSelectedSiswa] = useState(store.siswaList[0]?.id || "");
   const printRef = useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({ contentRef: printRef });
@@ -21,6 +23,10 @@ export default function SuratKelulusan() {
   const nilaiArr = MATA_PELAJARAN.map(m => nilaiIjazah[m] || 0);
   const jumlah = nilaiArr.reduce((a, b) => a + b, 0);
   const rataRata = nilaiArr.length > 0 ? jumlah / nilaiArr.length : 0;
+
+  const handleDateChange = (val: string) => {
+    setSekolah({ ...sekolah, tanggalKelulusan: val });
+  };
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -37,16 +43,28 @@ export default function SuratKelulusan() {
           </Button>
         </CardHeader>
         <CardContent>
-          <div className="max-w-xs">
-            <label className="text-sm font-medium text-foreground mb-1 block">Peserta Didik</label>
-            <Select value={selectedSiswa} onValueChange={setSelectedSiswa}>
-              <SelectTrigger className="h-9"><SelectValue placeholder="Pilih peserta didik" /></SelectTrigger>
-              <SelectContent>
-                {store.siswaList.map(s => (
-                  <SelectItem key={s.id} value={s.id}>{s.nama}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-foreground block">Pilih Tanggal Kelulusan (Titimangsa)</label>
+              <Input 
+                type="date" 
+                value={sekolah.tanggalKelulusan || sekolah.tanggalSurat || ""} 
+                onChange={(e) => handleDateChange(e.target.value)}
+                className="h-9"
+              />
+              <p className="text-[10px] text-muted-foreground italic">*Kosongkan untuk menggunakan tanggal default Pengaturan</p>
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-foreground block">Peserta Didik</label>
+              <Select value={selectedSiswa} onValueChange={setSelectedSiswa}>
+                <SelectTrigger className="h-9"><SelectValue placeholder="Pilih peserta didik" /></SelectTrigger>
+                <SelectContent>
+                  {store.siswaList.map(s => (
+                    <SelectItem key={s.id} value={s.id}>{s.nama}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardContent>
       </Card>

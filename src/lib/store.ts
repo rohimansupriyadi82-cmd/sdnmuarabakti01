@@ -48,6 +48,7 @@ export interface DataSekolah {
   tglSuratNISN: string;
   tglIjazah: string;
   tanggalSurat: string;
+  tanggalKelulusan?: string;
   kota: string;
 }
 

@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
-import { getStore, calculateNilaiIjazah, MATA_PELAJARAN, MATA_PELAJARAN_FULL } from "@/lib/store";
-import { KopSekolah } from "@/components/print/KopSekolah";
+import { getStore, calculateNilaiIjazah, MATA_PELAJARAN, MATA_PELAJARAN_FULL, useSekolah } from "@/lib/store";
+import { KopSekolah, TandaTanganKepala } from "@/components/print/KopSekolah";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -16,6 +17,7 @@ import { Printer } from "lucide-react";
 
 export default function SuratTranskripNilai() {
   const store = getStore();
+  const [sekolah, setSekolah] = useSekolah();
   const params = useParams<{ siswaId?: string }>();
   const initialId = params.siswaId && store.siswaList.some(s => s.id === params.siswaId)
     ? params.siswaId
@@ -44,14 +46,27 @@ export default function SuratTranskripNilai() {
   const jumlah = nilaiArr.reduce((a, b) => a + b, 0);
   const rataRata = nilaiArr.length > 0 ? jumlah / nilaiArr.length : 0;
 
+  const handleDateChange = (val: string) => {
+    setSekolah({ ...sekolah, tanggalKelulusan: val });
+  };
+
   return (
     <div className="space-y-4 animate-fade-in">
       <Card className="shadow-card no-print">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-heading font-semibold">Surat Transkrip Nilai</CardTitle>
           <div className="flex items-center gap-3">
+            <div className="space-y-1">
+              <label className="text-[10px] font-medium text-foreground block uppercase tracking-wider">Tanggal Kelulusan</label>
+              <Input 
+                type="date" 
+                value={sekolah.tanggalKelulusan || sekolah.tanggalSurat || ""} 
+                onChange={(e) => handleDateChange(e.target.value)}
+                className="h-9 w-40"
+              />
+            </div>
             <div className="max-w-xs">
-              <label className="text-sm font-medium text-foreground mb-1 block">
+              <label className="text-[10px] font-medium text-foreground block uppercase tracking-wider">
                 Peserta Didik
               </label>
               <Select value={selectedSiswa} onValueChange={setSelectedSiswa}>
@@ -67,7 +82,7 @@ export default function SuratTranskripNilai() {
                 </SelectContent>
               </Select>
             </div>
-            <Button onClick={() => handlePrint()} size="sm" className="h-9" disabled={!siswa}>
+            <Button onClick={() => handlePrint()} size="sm" className="h-9 self-end" disabled={!siswa}>
               <Printer className="mr-2 h-4 w-4" /> Cetak
             </Button>
           </div>
@@ -233,24 +248,7 @@ export default function SuratTranskripNilai() {
                 </tbody>
               </table>
 
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  marginTop: "40px",
-                  fontFamily: "'Times New Roman', serif",
-                }}
-              >
-                <div style={{ textAlign: "center", fontSize: "10pt" }}>
-                  <div>{`Kabupaten Bekasi, ............................`}</div>
-                  <div>Kepala Sekolah {store.sekolah.namaSekolah}</div>
-                  <div style={{ height: "60px" }} />
-                  <div style={{ fontWeight: "bold", textDecoration: "underline" }}>
-                    {store.sekolah.kepalaSekolah}
-                  </div>
-                  <div>NIP. {store.sekolah.nipKepalaSekolah}</div>
-                </div>
-              </div>
+              <TandaTanganKepala />
             </div>
           </CardContent>
         </Card>
