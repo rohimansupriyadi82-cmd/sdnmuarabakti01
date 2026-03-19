@@ -60,7 +60,7 @@ const emptyForm: StudentForm = {
   namaOrtuIjazah: "",
 };
 
-const parseCSVLine = (line: string): string[] => {
+const parseCSVLine = (line: string, delimiter: "," | ";" = ","): string[] => {
   const result: string[] = [];
   let current = "";
   let inQuotes = false;
@@ -76,7 +76,7 @@ const parseCSVLine = (line: string): string[] => {
       inQuotes = !inQuotes;
       continue;
     }
-    if (ch === "," && !inQuotes) {
+    if (ch === delimiter && !inQuotes) {
       result.push(current);
       current = "";
       continue;
@@ -87,12 +87,37 @@ const parseCSVLine = (line: string): string[] => {
   return result.map((v) => v.trim());
 };
 
+const detectDelimiter = (line: string): "," | ";" => {
+  let inQuotes = false;
+  let commaCount = 0;
+  let semiCount = 0;
+
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === "\"") {
+      if (inQuotes && line[i + 1] === "\"") {
+        i++;
+        continue;
+      }
+      inQuotes = !inQuotes;
+      continue;
+    }
+    if (!inQuotes) {
+      if (ch === ",") commaCount++;
+      if (ch === ";") semiCount++;
+    }
+  }
+
+  return semiCount > commaCount ? ";" : ",";
+};
+
 const normalizeHeader = (h: string) =>
   h
     .trim()
     .toLowerCase()
     .replace(/"/g, "")
     .replace(/\s+/g, " ")
+    .replace(/[()]/g, "")
     .replace(/\./g, "")
     .replace(/_/g, " ");
 
@@ -222,11 +247,18 @@ export default function DataSiswa() {
         return;
       }
 
-      const rawHeader = parseCSVLine(lines[0]).map(normalizeHeader);
+      const delimiter = detectDelimiter(lines[0]);
+      const rawHeader = parseCSVLine(lines[0], delimiter).map(normalizeHeader);
 
       const getValue = (row: string[], keys: string[]) => {
+        const normalizedKeys = keys.map(normalizeHeader);
         for (const k of keys) {
-          const idx = rawHeader.findIndex((h) => h === k || h.includes(k));
+          const nk = normalizeHeader(k);
+          const idx = rawHeader.findIndex((h) => h === nk || h.includes(nk));
+          if (idx >= 0) return row[idx]?.trim() || "";
+        }
+        for (const nk of normalizedKeys) {
+          const idx = rawHeader.findIndex((h) => h === nk || h.includes(nk));
           if (idx >= 0) return row[idx]?.trim() || "";
         }
         return "";
@@ -234,7 +266,7 @@ export default function DataSiswa() {
 
       const newStudents: Siswa[] = [];
       for (let i = 1; i < lines.length; i++) {
-        const row = parseCSVLine(lines[i]);
+        const row = parseCSVLine(lines[i], delimiter);
         if (row.every((v) => v === "")) continue;
 
         const nama = getValue(row, ["nama peserta", "nama"]);
