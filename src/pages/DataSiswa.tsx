@@ -233,7 +233,9 @@ export default function DataSiswa() {
     toast.success("Data peserta didik berhasil dihapus");
   };
 
-  const formFields: { key: string; label: string; type?: string; half?: boolean }[] = [
+  type FormFieldKey = Exclude<keyof typeof emptyStudent, "jenisKelamin" | "status">;
+
+  const formFields: { key: FormFieldKey; label: string; type?: string; half?: boolean }[] = [
     { key: "nomorPeserta", label: "Nomor Peserta" },
     { key: "nisn", label: "NISN", half: true },
     { key: "nis", label: "NIS", half: true },
@@ -372,7 +374,7 @@ export default function DataSiswa() {
                   <Input
                     id={key}
                     type={type || "text"}
-                    value={(form as any)[key]}
+                    value={form[key]}
                     onChange={(e) => setForm(prev => ({ ...prev, [key]: e.target.value }))}
                     className="h-9 mt-1"
                   />

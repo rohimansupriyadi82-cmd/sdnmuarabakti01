@@ -205,8 +205,8 @@ const loadSekolah = (): DataSekolah => {
 
 let sekolah: DataSekolah = typeof window !== 'undefined' ? loadSekolah() : { ...defaultSekolah };
 let bobot: BobotNilai = { ...defaultBobot };
-let nilaiMap: Map<string, NilaiSiswa> = new Map();
-let nilaiUSMap: Map<string, NilaiUS> = new Map();
+const nilaiMap: Map<string, NilaiSiswa> = new Map();
+const nilaiUSMap: Map<string, NilaiUS> = new Map();
 
 export const getStore = () => ({
   siswaList: [...siswaList],

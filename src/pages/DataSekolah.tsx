@@ -1,4 +1,4 @@
-import { useSekolah } from "@/lib/store";
+import { useSekolah, type DataSekolah } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +13,7 @@ export default function DataSekolah() {
   const [form, setForm] = useState(sekolah);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = <K extends keyof DataSekolah>(field: K, value: DataSekolah[K]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -42,7 +42,20 @@ export default function DataSekolah() {
     toast.success("Identitas sekolah berhasil disimpan");
   };
 
-  const fields = [
+  type SchoolFieldKey =
+    | "namaSekolah"
+    | "npsn"
+    | "status"
+    | "alamatSekolah"
+    | "kelurahan"
+    | "kecamatan"
+    | "kabupaten"
+    | "kodePos"
+    | "provinsi"
+    | "email"
+    | "tahunPelajaran";
+
+  const fields: { key: SchoolFieldKey; label: string }[] = [
     { key: "namaSekolah", label: "Nama Sekolah" },
     { key: "npsn", label: "NPSN" },
     { key: "status", label: "Status" },
@@ -122,7 +135,7 @@ export default function DataSekolah() {
                 <Label htmlFor={key} className="text-sm">{label}</Label>
                 <Input
                   id={key}
-                  value={(form as any)[key] || ""}
+                  value={form[key] || ""}
                   onChange={(e) => handleChange(key, e.target.value)}
                   className="h-9 mt-1"
                 />

@@ -1,4 +1,4 @@
-import { useSekolah } from "@/lib/store";
+import { useSekolah, type DataSekolah } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +18,7 @@ export default function IdentitasKepalaSekolah() {
   const [form, setForm] = useState(sekolah);
   const [newPassword, setNewPassword] = useState("");
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = <K extends keyof DataSekolah>(field: K, value: DataSekolah[K]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 

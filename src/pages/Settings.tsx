@@ -1,4 +1,4 @@
-import { useSekolah } from "@/lib/store";
+import { useSekolah, type DataSekolah } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +18,7 @@ export default function Settings() {
   const [newPassword, setNewPassword] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = <K extends keyof DataSekolah>(field: K, value: DataSekolah[K]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -69,8 +69,23 @@ export default function Settings() {
     }
   };
 
+  type SettingsFieldKey =
+    | "namaSekolah"
+    | "npsn"
+    | "status"
+    | "alamatSekolah"
+    | "kelurahan"
+    | "kecamatan"
+    | "kabupaten"
+    | "kodePos"
+    | "provinsi"
+    | "email"
+    | "tahunPelajaran"
+    | "kepalaSekolah"
+    | "nipKepalaSekolah";
+
   const fields = useMemo(
-    () => [
+    (): { key: SettingsFieldKey; label: string }[] => [
       { key: "namaSekolah", label: "Nama Sekolah" },
       { key: "npsn", label: "NPSN" },
       { key: "status", label: "Status" },
@@ -156,7 +171,7 @@ export default function Settings() {
                 </Label>
                 <Input
                   id={key}
-                  value={(form as any)[key] || ""}
+                  value={form[key] || ""}
                   onChange={(e) => handleChange(key, e.target.value)}
                   className="h-9 mt-1"
                 />
@@ -246,4 +261,3 @@ export default function Settings() {
     </div>
   );
 }
-

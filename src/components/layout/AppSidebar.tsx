@@ -75,7 +75,9 @@ function CollapsibleGroup({ label, icon: Icon, items, collapsed }: CollapsibleGr
   const location = useLocation();
   const isActive = items.some(item => location.pathname === item.url || location.pathname.startsWith(item.url + '/'));
 
-  const handleItemClick = (item: any) => {
+  type CollapsibleItem = CollapsibleGroupProps["items"][number];
+
+  const handleItemClick = (item: CollapsibleItem) => {
     if (item.onClick && item.title.includes("Ekspor")) {
       exportNilaiToExcel();
       toast.success("Data Nilai berhasil diekspor ke Excel");
@@ -189,6 +191,8 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarSeparator />
+        <CollapsibleGroup label="PENGATURAN" icon={Settings} items={pengaturanItems} collapsed={collapsed} />
+        <SidebarSeparator />
         <CollapsibleGroup label="ADMINISTRASI GURU KELAS" icon={Users} items={administrasiGuruKelasItems} collapsed={collapsed} />
         <SidebarSeparator />
         <CollapsibleGroup label="DATA MASTER" icon={FileText} items={dataMasterItems} collapsed={collapsed} />
@@ -196,8 +200,6 @@ export function AppSidebar() {
         <CollapsibleGroup label="INPUT NILAI" icon={BookOpen} items={inputNilaiItems} collapsed={collapsed} />
         <SidebarSeparator />
         <CollapsibleGroup label="DOKUMEN KELULUSAN" icon={Printer} items={dokumenKelulusanItems} collapsed={collapsed} />
-        <SidebarSeparator />
-        <CollapsibleGroup label="PENGATURAN" icon={Settings} items={pengaturanItems} collapsed={collapsed} />
       </SidebarContent>
 
       <SidebarFooter className="p-3 border-t border-sidebar-border">

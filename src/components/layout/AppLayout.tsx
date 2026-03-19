@@ -55,5 +55,5 @@ function PageTitle() {
     title = 'Cetak Dokumen';
   }
 
-  return <h1 className="text-heading font-semibold text-foreground">{title || 'Aplikasi Olah Nilai'}</h1>;
+  return <h1 className="text-heading font-semibold text-foreground">{title || 'Aplikasi Administrasi Sekolah'}</h1>;
 }

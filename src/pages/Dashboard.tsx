@@ -6,10 +6,34 @@ import { useNavigate } from "react-router-dom";
 const stats = () => {
   const store = getStore();
   return [
-    { label: "Peserta Didik", value: store.siswaList.length, icon: Users, href: "/data-siswa", color: "text-primary" },
-    { label: "Semester Aktif", value: "7 – 12", icon: BookOpen, href: "/nilai/7", color: "text-primary" },
-    { label: "Bobot Raport", value: `${store.bobot.raport * 100}%`, icon: GraduationCap, href: "/pengaturan-bobot", color: "text-primary" },
-    { label: "Dokumen Cetak", value: "9 Template", icon: Printer, href: "/print/ijazah", color: "text-primary" },
+    {
+      label: "Peserta Didik",
+      value: store.siswaList.length,
+      icon: Users,
+      href: "/data-siswa",
+      bgClass: "bg-gradient-to-br from-blue-600 via-sky-500 to-cyan-400",
+    },
+    {
+      label: "Semester Aktif",
+      value: "7 – 12",
+      icon: BookOpen,
+      href: "/nilai/7",
+      bgClass: "bg-gradient-to-br from-amber-500 via-orange-500 to-yellow-400",
+    },
+    {
+      label: "Bobot Raport",
+      value: `${store.bobot.raport * 100}%`,
+      icon: GraduationCap,
+      href: "/pengaturan-bobot",
+      bgClass: "bg-gradient-to-br from-emerald-600 via-green-500 to-lime-400",
+    },
+    {
+      label: "Dokumen Cetak",
+      value: "9 Template",
+      icon: Printer,
+      href: "/print/ijazah",
+      bgClass: "bg-gradient-to-br from-indigo-600 via-purple-500 to-fuchsia-400",
+    },
   ];
 };
 
@@ -20,7 +44,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h2 className="text-heading font-bold text-foreground">Aplikasi Olah Nilai</h2>
+        <h2 className="text-heading font-bold text-foreground">Aplikasi Administrasi Sekolah</h2>
         <p className="text-sm text-muted-foreground mt-1">Kec. Babelan Kab. Bekasi</p>
       </div>
 
@@ -28,15 +52,20 @@ export default function Dashboard() {
         {items.map((item) => (
           <Card
             key={item.label}
-            className="shadow-card cursor-pointer hover:shadow-elegant transition-shadow duration-200"
+            className={[
+              "cursor-pointer transition-all duration-200",
+              "rounded-2xl shadow-xl hover:shadow-2xl",
+              "text-white border-0",
+              item.bgClass,
+            ].join(" ")}
             onClick={() => navigate(item.href)}
           >
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">{item.label}</CardTitle>
-              <item.icon className={`h-5 w-5 ${item.color}`} />
+              <CardTitle className="text-sm font-semibold text-white/90">{item.label}</CardTitle>
+              <item.icon className="h-5 w-5 text-white" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold tabular-nums text-foreground">{item.value}</div>
+              <div className="text-3xl font-black tabular-nums text-white">{item.value}</div>
             </CardContent>
           </Card>
         ))}
