@@ -11,28 +11,28 @@ const stats = () => {
       value: store.siswaList.length,
       icon: Users,
       href: "/data-siswa",
-      bgClass: "bg-gradient-to-br from-blue-600 via-sky-500 to-cyan-400",
+      bgClass: "bg-gradient-to-br from-blue-500 to-blue-600",
     },
     {
       label: "Semester Aktif",
       value: "7 – 12",
       icon: BookOpen,
       href: "/nilai/7",
-      bgClass: "bg-gradient-to-br from-amber-500 via-orange-500 to-yellow-400",
+      bgClass: "bg-gradient-to-br from-orange-400 to-orange-500",
     },
     {
       label: "Bobot Raport",
       value: `${store.bobot.raport * 100}%`,
       icon: GraduationCap,
       href: "/pengaturan-bobot",
-      bgClass: "bg-gradient-to-br from-emerald-600 via-green-500 to-lime-400",
+      bgClass: "bg-gradient-to-br from-emerald-500 to-emerald-600",
     },
     {
       label: "Dokumen Cetak",
       value: "9 Template",
       icon: Printer,
       href: "/print/ijazah",
-      bgClass: "bg-gradient-to-br from-indigo-600 via-purple-500 to-fuchsia-400",
+      bgClass: "bg-gradient-to-br from-purple-500 to-indigo-600",
     },
   ];
 };
