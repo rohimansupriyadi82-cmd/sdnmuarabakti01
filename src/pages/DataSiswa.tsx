@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Edit2, Plus, Printer, Search, Trash2 } from "lucide-react";
+import { Edit2, Plus, Printer, Search, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 import { useSiswaList, type Siswa } from "@/lib/store";
@@ -40,6 +40,42 @@ const emptyForm: StudentForm = {
   jenisKelamin: "L",
 };
 
+const parseCSVLine = (line: string): string[] => {
+  const result: string[] = [];
+  let current = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === "\"") {
+      if (inQuotes && line[i + 1] === "\"") {
+        current += "\"";
+        i++;
+        continue;
+      }
+      inQuotes = !inQuotes;
+      continue;
+    }
+    if (ch === "," && !inQuotes) {
+      result.push(current);
+      current = "";
+      continue;
+    }
+    current += ch;
+  }
+  result.push(current);
+  return result.map((v) => v.trim());
+};
+
+const normalizeHeader = (h: string) =>
+  h
+    .trim()
+    .toLowerCase()
+    .replace(/"/g, "")
+    .replace(/\s+/g, " ")
+    .replace(/\./g, "")
+    .replace(/_/g, " ");
+
 export default function DataSiswa() {
   const navigate = useNavigate();
   const [siswaList, setSiswaList] = useSiswaList();
@@ -48,6 +84,7 @@ export default function DataSiswa() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState<StudentForm>(emptyForm);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -128,6 +165,92 @@ export default function DataSiswa() {
     toast.success("Data peserta didik berhasil dihapus");
   };
 
+  const handleCSVImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const text = String(evt.target?.result || "");
+      const lines = text
+        .split(/\r?\n/)
+        .map((l) => l.trim())
+        .filter((l) => l.length > 0);
+
+      if (lines.length < 2) {
+        toast.error("File CSV kosong atau tidak valid");
+        return;
+      }
+
+      const rawHeader = parseCSVLine(lines[0]).map(normalizeHeader);
+
+      const getValue = (row: string[], keys: string[]) => {
+        for (const k of keys) {
+          const idx = rawHeader.findIndex((h) => h === k || h.includes(k));
+          if (idx >= 0) return row[idx]?.trim() || "";
+        }
+        return "";
+      };
+
+      const newStudents: Siswa[] = [];
+      for (let i = 1; i < lines.length; i++) {
+        const row = parseCSVLine(lines[i]);
+        if (row.every((v) => v === "")) continue;
+
+        const nama = getValue(row, ["nama peserta", "nama"]);
+        const nisn = getValue(row, ["nisn"]);
+        const nis = getValue(row, ["nis", "no induk"]);
+        const nomorPeserta = getValue(row, ["nomor peserta", "no peserta"]);
+        const jkRaw = getValue(row, ["jenis kelamin lp", "jenis kelamin l/p", "jenis kelamin", "l/p", "kelamin"]);
+        const tempatLahir = getValue(row, ["tempat lahir"]);
+        const tanggalLahir = getValue(row, ["tanggal lahir", "tgl lahir"]);
+        const namaAyah = getValue(row, ["nama ayah", "ayah"]);
+        const namaIbu = getValue(row, ["nama ibu", "ibu"]);
+        const noSeriIjazah = getValue(row, ["no seri ijazah", "no seri", "seri ijazah"]);
+        const namaOrtuIjazah = getValue(row, ["nama ortu di ijazah", "nama ortu"]);
+
+        if (!nama && !nisn) continue;
+
+        const jenisKelamin: Siswa["jenisKelamin"] =
+          jkRaw.toUpperCase().startsWith("P") ? "P" : "L";
+
+        newStudents.push({
+          id: `s${Date.now()}-${i}`,
+          nomorPeserta,
+          nisn,
+          nis,
+          nama,
+          jenisKelamin,
+          tempatLahir,
+          tanggalLahir,
+          namaAyah,
+          namaIbu,
+          noSeriIjazah,
+          namaOrtuIjazah,
+          alamat: "",
+          status: "aktif",
+        });
+      }
+
+      if (newStudents.length === 0) {
+        toast.error("Tidak ada data valid ditemukan di CSV");
+        return;
+      }
+
+      setSiswaList((prev) => {
+        const total = prev.length + newStudents.length;
+        if (total > 500) {
+          toast.error(`Kapasitas melebihi 500 (${total} siswa)`);
+          return prev;
+        }
+        return [...prev, ...newStudents];
+      });
+      toast.success(`${newStudents.length} peserta didik berhasil diimpor`);
+    };
+    reader.readAsText(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   return (
     <div className="space-y-4 animate-fade-in">
       <Card className="shadow-card">
@@ -138,9 +261,27 @@ export default function DataSiswa() {
               ({siswaList.length}/500)
             </span>
           </CardTitle>
-          <Button onClick={openAdd} size="sm" className="h-9">
-            <Plus className="mr-2 h-4 w-4" /> Tambah Siswa
-          </Button>
+          <div className="flex items-center gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".csv,text/csv"
+              className="hidden"
+              onChange={handleCSVImport}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-9"
+              onClick={() => fileInputRef.current?.click()}
+              title="Impor CSV"
+            >
+              <Upload className="mr-2 h-4 w-4" /> Impor CSV
+            </Button>
+            <Button onClick={openAdd} size="sm" className="h-9">
+              <Plus className="mr-2 h-4 w-4" /> Tambah Siswa
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-2 mb-4">
@@ -213,7 +354,7 @@ export default function DataSiswa() {
                             onClick={() => openEdit(s)}
                             title="Edit"
                           >
-                            <Edit2 className="h-3.5 w-3.5" />
+                            <Edit2 className="h-3.5 w-3.5 text-blue-600" />
                           </Button>
                           <Button
                             variant="ghost"
