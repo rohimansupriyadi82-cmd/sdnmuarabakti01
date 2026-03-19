@@ -1,5 +1,5 @@
 // Simple in-memory store for the app state
-import { useState, useCallback } from 'react';
+import { useState, useCallback, type SetStateAction } from 'react';
 
 export interface Siswa {
   id: string;
@@ -289,9 +289,14 @@ export const calculateNilaiIjazah = (siswaId: string): Record<string, number> =>
 // Custom hooks
 export function useSiswaList() {
   const [list, setList] = useState(siswaList);
-  const update = useCallback((newList: Siswa[]) => {
-    setSiswaList(newList);
-    setList([...newList]);
+  const update = useCallback((action: SetStateAction<Siswa[]>) => {
+    setList((prev) => {
+      const next = typeof action === 'function'
+        ? (action as (p: Siswa[]) => Siswa[])(prev)
+        : action;
+      setSiswaList(next);
+      return [...next];
+    });
   }, []);
   return [list, update] as const;
 }
