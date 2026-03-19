@@ -34,7 +34,7 @@ const administrasiGuruKelasItems = [
 ];
 
 const dataMasterItems = [
-  { title: "Identitas Sekolah", url: "/identitas-sekolah", icon: School },
+  { title: "Pengaturan Sekolah", url: "/identitas-sekolah", icon: Settings },
   { title: "Data Peserta Didik", url: "/data-siswa", icon: Users },
 ];
 

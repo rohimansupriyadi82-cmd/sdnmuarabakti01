@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Printer } from "lucide-react";
+import { Printer, ChevronLeft } from "lucide-react";
 import JsBarcode from "jsbarcode";
 
 export default function SuratKeteranganNISN() {
@@ -36,7 +36,12 @@ export default function SuratKeteranganNISN() {
     <div className="space-y-4 animate-fade-in">
       <Card className="shadow-card no-print">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-heading font-semibold">Surat Keterangan NISN</CardTitle>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={() => window.history.back()} className="h-9 w-9 p-0">
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            <CardTitle className="text-heading font-semibold">Surat Keterangan NISN</CardTitle>
+          </div>
           <Button onClick={() => handlePrint()} size="sm" className="h-9" disabled={!siswa}>
             <Printer className="mr-2 h-4 w-4" /> Cetak
           </Button>
@@ -75,42 +80,49 @@ export default function SuratKeteranganNISN() {
               }}
             >
               <KopSekolah
-                judulSurat="SURAT KETERANGAN NISN"
-                nomorSurat={store.sekolah.noSuratNISN}
+                judulSurat={
+                  <div className="text-center">
+                    <span className="font-bold underline text-[14pt]">SURAT KETERANGAN NISN</span>
+                    <div className="font-normal text-[12pt] mt-1">Nomor : {store.sekolah.noSuratNISN}</div>
+                  </div>
+                }
+                hideDefaultJudul
               />
 
               <p className="text-justify mb-6 mt-8">
-                Yang bertandatangan dibawah ini Kepala {store.sekolah.namaSekolah} menerangkan bahwa :
+                Yang bertandatangan dibawah ini Kepala SDN MUARA BAKTI 01 menerangkan bahwa :
               </p>
 
-              <div className="space-y-1 mb-6 ml-4 text-[11pt]">
+              <div className="space-y-1 mb-6 ml-4 text-[12pt]">
                 <div className="flex"><span className="w-56">Nama</span><span className="w-4">:</span><span className="font-bold uppercase">{siswa.nama}</span></div>
                 <div className="flex"><span className="w-56">Tempat dan Tanggal Lahir</span><span className="w-4">:</span><span>{siswa.tempatLahir}, {siswa.tanggalLahir}</span></div>
                 <div className="flex"><span className="w-56">Jenis Kelamin</span><span className="w-4">:</span><span>{siswa.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</span></div>
                 <div className="flex"><span className="w-56">Nomor Induk Siswa</span><span className="w-4">:</span><span>{siswa.nis}</span></div>
                 <div className="flex"><span className="w-56">NISN</span><span className="w-4">:</span><span className="font-bold">{siswa.nisn}</span></div>
-                <div className="flex"><span className="w-56">Asal Sekolah</span><span className="w-4">:</span><span>{store.sekolah.namaSekolah}</span></div>
+                <div className="flex"><span className="w-56">Asal Sekolah</span><span className="w-4">:</span><span>SDN MUARA BAKTI 01</span></div>
                 <div className="flex"><span className="w-56">Nama Orang Tua/Wali</span><span className="w-4">:</span><span>{siswa.namaOrtuIjazah || siswa.namaAyah}</span></div>
                 <div className="flex"><span className="w-56">Alamat</span><span className="w-4">:</span><span>{siswa.alamat}</span></div>
               </div>
 
               <p className="text-justify indent-12 mb-6">
-                Adalah benar nama tersebut di atas berasal dari {store.sekolah.namaSekolah} Tahun Pelajaran 2024/2025 dan berdasarkan catatan pada kami, peserta didik tersebut telah mempunyai Nomor Induk Siswa Nasional (NISN) hasil Verifikasi dan Validasi (VERVAL PD) di PDSP yaitu :
+                Adalah benar nama tersebut di atas berasal dari SDN MUARA BAKTI 01 Tahun Pelajaran 2024/2025 dan berdasarkan catatan pada kami, peserta didik tersebut telah mempunyai Nomor Induk Siswa Nasional (NISN) hasil Verfikasi dan Validasi (VERVAL PD) di PDSP yaitu :
               </p>
 
-              <div className="my-8 py-4 px-8 border border-blue-800 bg-[#bfdbfe] text-center">
-                <span className="text-5xl font-black tracking-[0.1em] text-[#1e40af]">{siswa.nisn}</span>
+              <div className="my-8 py-6 px-8 bg-[#e3f2fd] text-center rounded-none border border-blue-200">
+                <span className="text-5xl font-bold text-black">{siswa.nisn}</span>
               </div>
 
               <p className="text-justify indent-12 mb-12">
                 Demikian surat keterangan ini dibuat untuk dipergunakan sebagai bahan persyaratan mengikuti seleksi Penerimaan Peserta Didik Baru (PPDB) pada sekolah lanjutan
               </p>
 
-              <div className="flex justify-between items-end mt-12">
-                <div className="barcode-container pb-4">
+              <div className="flex justify-between items-end mt-16 px-4">
+                <div className="barcode-container">
                   <svg ref={barcodeRef}></svg>
                 </div>
-                <TandaTanganKepala tanggal={store.sekolah.tglSuratNISN} />
+                <div className="signature-container">
+                  <TandaTanganKepala tanggal={store.sekolah.tanggalSurat} />
+                </div>
               </div>
             </div>
           </CardContent>

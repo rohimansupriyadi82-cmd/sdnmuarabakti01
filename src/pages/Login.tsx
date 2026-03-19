@@ -20,7 +20,7 @@ export default function Login() {
     setTimeout(() => {
       const storedPass = localStorage.getItem("admin_password") || "admin";
       if (username === "admin" && password === storedPass) {
-        setAuth({ username: "admin", role: "admin" });
+        localStorage.setItem("isLoggedIn", "true");
         toast.success("Login berhasil!");
         navigate("/dashboard");
       } else {

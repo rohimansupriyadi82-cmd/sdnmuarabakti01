@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 export default function IdentitasKepalaSekolah() {
   const [sekolah, setSekolah] = useSekolah();
   const [form, setForm] = useState(sekolah);
+  const [newPassword, setNewPassword] = useState("");
 
   const handleChange = (field: string, value: any) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -37,12 +38,10 @@ export default function IdentitasKepalaSekolah() {
   };
 
   const handleChangePassword = () => {
-    const passwordInput = document.getElementById('newPassword') as HTMLInputElement;
-    const newPass = passwordInput?.value;
-    if (newPass) {
-      localStorage.setItem("admin_password", newPass);
+    if (newPassword) {
+      localStorage.setItem("admin_password", newPassword);
       toast.success("Password berhasil diubah!");
-      passwordInput.value = "";
+      setNewPassword("");
     } else {
       toast.error("Silakan masukkan password baru.");
     }
@@ -54,12 +53,6 @@ export default function IdentitasKepalaSekolah() {
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-heading font-semibold">Identitas Kepala Sekolah</CardTitle>
           <div className="flex gap-2">
-            <Button onClick={handleChangePassword} variant="outline" size="sm" className="h-9">
-              <KeyRound className="mr-2 h-4 w-4" /> Ganti Password
-            </Button>
-            <Button onClick={handleResetData} variant="destructive" size="sm" className="h-9">
-              <Trash2 className="mr-2 h-4 w-4" /> Reset Data
-            </Button>
             <Button onClick={handleSave} size="sm" className="h-9">
               <Save className="mr-2 h-4 w-4" /> Simpan
             </Button>
@@ -268,7 +261,7 @@ export default function IdentitasKepalaSekolah() {
       <Card className="shadow-card border-t-4 border-t-slate-800">
         <CardHeader>
           <CardTitle className="text-heading font-bold flex items-center gap-2">
-            <KeyRound className="h-5 w-5" /> KEAMANAN & AKUN
+            <KeyRound className="h-5 w-5" /> KEAMANAN AKUN
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -279,6 +272,8 @@ export default function IdentitasKepalaSekolah() {
                 <Input
                   id="newPassword"
                   type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Masukkan password baru..."
                   className="h-10 border-slate-200"
                   onKeyDown={(e) => {
@@ -288,21 +283,21 @@ export default function IdentitasKepalaSekolah() {
                   }}
                 />
                 <Button onClick={handleChangePassword} variant="secondary">
-                  Update Password
+                  Simpan Password
                 </Button>
               </div>
-              <p className="text-[10px] text-slate-400 italic">*Password akan tersimpan di browser ini saja.</p>
+              <p className="text-[10px] text-slate-400 italic">*Password baru ini akan menggantikan password lama di sistem login.</p>
             </div>
           </div>
 
           <div className="pt-6 border-t border-slate-100">
             <div className="bg-red-50 border border-red-100 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="space-y-1">
-                <h4 className="text-sm font-bold text-red-900">Zona Bahaya</h4>
-                <p className="text-xs text-red-700">Hapus permanen semua data (siswa, nilai, pengaturan) dari aplikasi ini.</p>
+                <h4 className="text-sm font-bold text-red-900">Penghapusan Data</h4>
+                <p className="text-xs text-red-700">Hapus permanen semua data (siswa, nilai, pengaturan) dari localStorage.</p>
               </div>
               <Button onClick={handleResetData} variant="destructive" className="font-bold shadow-lg shadow-red-100">
-                <Trash2 className="mr-2 h-4 w-4" /> Hapus Semua Data & Reset
+                <Trash2 className="mr-2 h-4 w-4" /> Hapus Semua Data
               </Button>
             </div>
           </div>

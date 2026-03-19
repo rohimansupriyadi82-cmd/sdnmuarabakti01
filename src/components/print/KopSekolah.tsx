@@ -5,10 +5,11 @@ import { id } from "date-fns/locale";
 
 interface KopSekolahProps {
   nomorSurat?: string;
-  judulSurat: string;
+  judulSurat: string | React.ReactNode;
+  hideDefaultJudul?: boolean;
 }
 
-export function KopSekolah({ nomorSurat, judulSurat }: KopSekolahProps) {
+export function KopSekolah({ nomorSurat, judulSurat, hideDefaultJudul = false }: KopSekolahProps) {
   const [s] = useSekolah();
   const logoSrc = s.logoDataUrl || logoBekasi;
 
@@ -47,14 +48,21 @@ export function KopSekolah({ nomorSurat, judulSurat }: KopSekolahProps) {
       <div style={{ borderBottom: '1px solid black', marginTop: '1px' }} />
 
       {/* Judul Surat */}
-      <div style={{ textAlign: 'center', marginTop: '6mm', marginBottom: '5mm' }}>
-        <div style={{ fontSize: '12pt', fontWeight: 700, textDecoration: 'underline', textTransform: 'uppercase' }}>
+      {!hideDefaultJudul && (
+        <div style={{ textAlign: 'center', marginTop: '6mm', marginBottom: '5mm' }}>
+          <div style={{ fontSize: '12pt', fontWeight: 700, textDecoration: 'underline', textTransform: 'uppercase' }}>
+            {judulSurat}
+          </div>
+          <div style={{ fontSize: '11pt', marginTop: '1mm' }}>
+            Nomor: {nomorSurat || s.nomorSurat}
+          </div>
+        </div>
+      )}
+      {hideDefaultJudul && (
+        <div style={{ marginTop: '6mm', marginBottom: '5mm' }}>
           {judulSurat}
         </div>
-        <div style={{ fontSize: '11pt', marginTop: '1mm' }}>
-          Nomor: {nomorSurat || s.nomorSurat}
-        </div>
-      </div>
+      )}
     </div>
   );
 }

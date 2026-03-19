@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppLayout } from "@/components/layout/AppLayout";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
-import DataSekolah from "@/pages/DataSekolah";
+import Settings from "@/pages/Settings";
 import IdentitasKepalaSekolah from "@/pages/IdentitasKepalaSekolah";
 import DataSiswa from "@/pages/DataSiswa";
 import PengaturanBobot from "@/pages/PengaturanBobot";
@@ -34,7 +34,7 @@ const App = () => (
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/identitas-sekolah" element={<DataSekolah />} />
+            <Route path="/identitas-sekolah" element={<Settings />} />
             <Route path="/identitas-kepala-sekolah" element={<IdentitasKepalaSekolah />} />
             <Route path="/data-siswa" element={<DataSiswa />} />
             <Route path="/pengaturan-bobot" element={<PengaturanBobot />} />

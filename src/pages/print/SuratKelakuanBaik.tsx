@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Printer } from "lucide-react";
+import { Printer, ChevronLeft } from "lucide-react";
 
 export default function SuratKelakuanBaik() {
   const store = getStore();
@@ -21,7 +21,12 @@ export default function SuratKelakuanBaik() {
     <div className="space-y-4 animate-fade-in">
       <Card className="shadow-card no-print">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-heading font-semibold">Surat Keterangan Kelakuan Baik</CardTitle>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={() => window.history.back()} className="h-9 w-9 p-0">
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            <CardTitle className="text-heading font-semibold">Surat Keterangan Kelakuan Baik</CardTitle>
+          </div>
           <Button onClick={() => handlePrint()} size="sm" className="h-9" disabled={!siswa}>
             <Printer className="mr-2 h-4 w-4" /> Cetak
           </Button>
@@ -92,7 +97,7 @@ export default function SuratKelakuanBaik() {
                 mengikuti seleksi Penerimaan Peserta Didik Baru (PPDB) pada sekolah lanjutan
               </p>
 
-              <TandaTanganKepala tanggal={store.sekolah.tglSuratKelakuanBaik} />
+              <TandaTanganKepala tanggal={store.sekolah.tanggalSurat} />
             </div>
           </CardContent>
         </Card>
