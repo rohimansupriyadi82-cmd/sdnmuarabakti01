@@ -195,7 +195,7 @@ export default function Settings() {
       <Card className="shadow-card border-t-4 border-t-slate-800">
         <CardHeader>
           <CardTitle className="text-heading font-bold flex items-center gap-2">
-            <KeyRound className="h-5 w-5" /> PENGATURAN KEAMANAN
+            <KeyRound className="h-5 w-5" /> KEAMANAN
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import { getStore } from "@/lib/store";
 import { TandaTanganKepala } from "@/components/print/KopSekolah";
@@ -8,33 +8,17 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Printer, ChevronLeft } from "lucide-react";
-import * as JsBarcode from "jsbarcode";
 import logoBekasi from "@/assets/logo-bekasi.png";
 
 export default function SuratKeteranganNISN() {
   const store = getStore();
   const [selectedSiswa, setSelectedSiswa] = useState(store.siswaList[0]?.id || "");
   const printRef = useRef<HTMLDivElement>(null);
-  const barcodeRef = useRef<SVGSVGElement>(null);
   const handlePrint = useReactToPrint({
     contentRef: printRef,
   });
 
   const siswa = store.siswaList.find((s) => s.id === selectedSiswa);
-
-  useEffect(() => {
-    if (siswa && barcodeRef.current) {
-      const barcodeFn = (JsBarcode as any).default || JsBarcode;
-      barcodeFn(barcodeRef.current, siswa.nisn, {
-        format: "CODE128",
-        width: 1.5,
-        height: 40,
-        displayValue: true,
-        fontSize: 12,
-        margin: 0,
-      });
-    }
-  }, [siswa]);
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -225,13 +209,13 @@ export default function SuratKeteranganNISN() {
 
               <p className="text-justify indent-12 mb-12">
                 Demikian surat keterangan ini dibuat untuk dipergunakan sebagai
-                bahan persyaratan mengikuti seleksi Penerimaan Peserta Didik
-                Baru (PPDB) pada sekolah lanjutan
+                bahan persyaratan mengikuti seleimaan Peserta Didik Baru (PPDB)
+                pada sekolah lanjutan
               </p>
 
               <div className="flex justify-between items-end mt-16 px-4">
                 <div className="barcode-container">
-                  <svg ref={barcodeRef}></svg>
+                  {/* Ruang kosong pengganti Barcode sesuai instruksi */}
                 </div>
                 <div className="signature-container">
                   <TandaTanganKepala tanggal={store.sekolah.tanggalSurat} />
